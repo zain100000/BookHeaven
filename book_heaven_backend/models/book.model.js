@@ -77,7 +77,7 @@ const bookSchema = new mongoose.Schema(
           ref: "User",
         },
         // Text of the review
-        reviewText: String,
+        comment: String,
         // Rating given by the user (range: 0 to 5)
         rating: {
           type: Number,

@@ -11,6 +11,8 @@ import AddBook from "../screens/manageBooks/addBooks/AddBook";
 import BookDetails from "../screens/manageBooks/bookDetails/BookDetails";
 import UpdateBook from "../screens/manageBooks/updateBook/UpdateBook";
 import Stock from "../screens/manageStock/stock/Stock";
+import Reviews from "../screens/manageReviews/reviews/Reviews";
+import ReviewDetails from "../screens/manageReviews/reviewDetails/ReviewDetails";
 
 const AppNavigator = () => {
   return (
@@ -32,7 +34,10 @@ const AppNavigator = () => {
         <Route path="books/book-details/:id" element={<BookDetails />} />
         <Route path="books/edit-book/:id" element={<UpdateBook />} />
 
-        <Route path="stocks/manage-stock" element={<Stock />} />
+        <Route path="stocks/manage-stocks" element={<Stock />} />
+        <Route path="reviews/manage-reviews" element={<Reviews />} />
+        <Route path="reviews/review-details/:id" element={<ReviewDetails />} />
+
       </Route>
 
       <Route path="*" element={<NotFound />} />

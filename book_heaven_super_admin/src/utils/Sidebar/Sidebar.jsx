@@ -18,7 +18,7 @@ const Sidebar = () => {
 
     const isBookRoute = bookRoutes.some((route) =>
       location.pathname.startsWith(route)
-    );    
+    );
   }, [location]);
 
   return (
@@ -52,16 +52,29 @@ const Sidebar = () => {
           </NavLink>
 
           <NavLink
-            to="/admin/stocks/manage-stock"
+            to="/admin/stocks/manage-stocks"
             className={`sidebar-link ${
-              activeLink === "/admin/stocks/manage-stock" ? "active" : ""
+              activeLink === "/admin/stocks/manage-stocks" ? "active" : ""
             }`}
-            onClick={() => setActiveLink("/admin/stocks/manage-stock")}
+            onClick={() => setActiveLink("/admin/stocks/manage-stocks")}
           >
             <div className="sidebar-icon">
               <i className="fas fa-shopping-cart"></i>
             </div>
             <span>Manage Stock</span>
+          </NavLink>
+
+          <NavLink
+            to="/admin/reviews/manage-reviews"
+            className={`sidebar-link ${
+              activeLink === "/admin/reviews/manage-reviews" ? "active" : ""
+            }`}
+            onClick={() => setActiveLink("/admin/reviews/manage-reviews")}
+          >
+            <div className="sidebar-icon">
+              <i className="fas fa-star"></i>
+            </div>
+            <span>Manage Reviews</span>
           </NavLink>
         </li>
       </ul>

@@ -4,6 +4,7 @@ import { combineReducers } from "redux";
 import authReducer from "../slices/authSlice";
 import userReducer from "../slices/userSlice";
 import bookReducer from "../slices/bookSlice";
+import reviewReducer from "../slices/reviewSlice";
 
 const localStorageWrapper = {
   getItem: (key) => {
@@ -35,6 +36,7 @@ const rootReducer = combineReducers({
   auth: authReducer,
   users: userReducer,
   books: bookReducer,
+  reviews: reviewReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

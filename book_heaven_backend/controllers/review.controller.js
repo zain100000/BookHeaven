@@ -5,13 +5,13 @@ const Review = require("../models/review.model");
 exports.addReview = async (req, res) => {
   try {
     const { bookId } = req.params;
-    const { userId, reviewText, rating } = req.body;
+    const { userId, comment, rating } = req.body;
 
     // Validate input
-    if (!userId || !reviewText || !rating) {
+    if (!userId || !comment || !rating) {
       return res.status(400).json({
         success: false,
-        message: "userId, reviewText, and rating are required.",
+        message: "userId, comment, and rating are required.",
       });
     }
 
@@ -40,13 +40,13 @@ exports.addReview = async (req, res) => {
     );
 
     // Create a new review in the reviews collection
-    const review = await Review.create({ userId, bookId, reviewText, rating });
+    const review = await Review.create({ userId, bookId, comment, rating });
 
     // Add the review to the book's reviews array with the same _id
     book.reviews.push({
       _id: review._id, // Use the same _id as the review in the Review collection
       userId,
-      reviewText,
+      comment,
       rating,
     });
 
@@ -59,7 +59,7 @@ exports.addReview = async (req, res) => {
     // Save the updated book
     await book.save();
 
-    res.status(201).json({
+    res.status(200).json({
       success: true,
       message: "Review added successfully",
       book,
@@ -76,8 +76,8 @@ exports.getAllReviews = async (req, res) => {
   try {
     // Fetch all reviews from the Review collection and populate user and book details
     const reviews = await Review.find()
-      .populate("userId", "name email") // Populate user details (name and email)
-      .populate("bookId", "title author"); // Populate book details (title and author)
+      .populate("userId", "profilePicture userName email") // Populate user details (userName and email)
+      .populate("bookId", "bookImage title author genre price"); // Populate book details (title and author)
 
     // Check if reviews exist
     if (!reviews || reviews.length === 0) {
@@ -104,8 +104,8 @@ exports.getReviewById = async (req, res) => {
 
     // Find the review by ID and populate user and book details
     const review = await Review.findById(reviewId)
-      .populate("userId", "name email") // Populate user details
-      .populate("bookId", "title author"); // Populate book details
+      .populate("userId", "profilePicture userName email") // Populate user details (userName and email)
+      .populate("bookId", "bookImage title author genre price"); // Populate book details (title and author)
 
     // If the review is not found, return a 404 error
     if (!review) {
@@ -129,13 +129,13 @@ exports.getReviewById = async (req, res) => {
 exports.updateReview = async (req, res) => {
   try {
     const { reviewId } = req.params; // Extract reviewId from the request parameters
-    const { reviewText, rating } = req.body; // Extract reviewText and rating from the request body
+    const { comment, rating } = req.body; // Extract comment and rating from the request body
 
     // Validate input
-    if (!reviewText || !rating) {
+    if (!comment || !rating) {
       return res.status(400).json({
         success: false,
-        message: "reviewText and rating are required.",
+        message: "comment and rating are required.",
       });
     }
 
@@ -156,14 +156,14 @@ exports.updateReview = async (req, res) => {
     }
 
     // Update the review in the Review collection
-    review.reviewText = reviewText;
+    review.comment = comment;
     review.rating = rating;
     await review.save();
 
     // Find and update the corresponding review in the Book's reviews array
     const bookReview = book.reviews.find((r) => r._id.toString() === reviewId);
     if (bookReview) {
-      bookReview.reviewText = reviewText;
+      bookReview.comment = comment;
       bookReview.rating = rating;
     } else {
       return res.status(404).json({
