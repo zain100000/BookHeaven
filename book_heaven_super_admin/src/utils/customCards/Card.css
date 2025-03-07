@@ -33,7 +33,7 @@
 #card .custom-card {
   width: 100%;
   max-width: 300px;
-  height: 40vh;
+  height: 35vh;
   border-radius: var(--card-radius);
   overflow: hidden;
   box-shadow: var(--box-shadow);

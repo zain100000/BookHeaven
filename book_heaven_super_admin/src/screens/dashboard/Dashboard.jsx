@@ -41,10 +41,16 @@ const Dashboard = () => {
               onClick={handleNavigateBook}
               title="Books"
               icon={<i className="fas fa-book" />}
-              stats={[
-                { label: "Total", value: totalBooks },
-                { label: "Total Stock", value: totalStock },
-              ]}
+              stats={[{ label: "Total", value: totalBooks }]}
+            />
+          </div>
+
+          <div className="col-sm-12 col-md-12 col-lg-4">
+            <Card
+              onClick={handleNavigateBook}
+              title="Stock"
+              icon={<i className="fas fa-shopping-cart" />}
+              stats={[{ label: "Total", value: totalStock }]}
             />
           </div>
 

@@ -42,7 +42,7 @@ const Books = () => {
   }, [dispatch, user?.id]);
 
   const filteredBooks = (Array.isArray(books) ? books : []).filter((book) =>
-    book.title.toLowerCase().includes(search.toLowerCase())
+    book.title && book.title.toLowerCase().includes(search.toLowerCase())
   );
 
   const handleSearch = (e) => {

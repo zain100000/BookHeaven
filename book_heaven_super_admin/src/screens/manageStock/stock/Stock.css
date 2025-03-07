@@ -20,20 +20,20 @@
   list-style: none;
 }
 
-/* ------------------------------ BOOK SCREEN CSS ------------------------------------ */
+/* ------------------------------ STOCK SCREEN CSS ----------------------------------- */
 /* ----------------------------------------------------------------------------------- */
 /* ----------------------------------------------------------------------------------- */
 /* ----------------------------------------------------------------------------------- */
 /* ----------------------------------------------------------------------------------- */
 
-#book .books-container {
+#stock .stocks-container {
   padding: 20px;
   background: var(--white);
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-#book .books-title {
+#stock .stocks-title {
   font-size: 24px;
   font-weight: 600;
   color: var(--primary);
@@ -41,11 +41,11 @@
   margin-left: 14px;
 }
 
-#book .table-responsive {
+#stock .table-responsive {
   overflow-x: auto;
 }
 
-#book .custom-table {
+#stock .custom-table {
   width: 100%;
   border-collapse: collapse;
   background: var(--white);
@@ -53,40 +53,40 @@
   overflow: hidden;
 }
 
-#book .custom-table thead {
+#stock .custom-table thead {
   background: var(--primary);
   color: var(--white);
 }
 
-#book .custom-table th,
-#book .custom-table td {
+#stock .custom-table th,
+#stock .custom-table td {
   padding: 12px 15px;
   text-align: left;
   vertical-align: middle;
 }
 
-#book .custom-table tbody tr {
+#stock .custom-table tbody tr {
   transition: background 0.3s ease-in-out, transform 0.2s ease;
 }
 
-#book .custom-table tbody tr:hover {
+#stock .custom-table tbody tr:hover {
   background: var(--gray);
   transform: scale(1.02);
   cursor: pointer;
 }
 
-#book .book-profile {
+#stock .stock-profile {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.book-name {
+#stock .stock-name {
   font-size: 16px;
   font-weight: 600;
 }
 
-#book .book-img {
+#stock .stock-img {
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -94,7 +94,7 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-#book .action-button {
+#stock .action-button {
   padding: 5px 10px;
   border: none;
   border-radius: 5px;
@@ -103,26 +103,21 @@
   margin-left: 5px;
 }
 
-#book .action-button.view-detail {
-  background-color: var(--primary);
-  color: white;
-}
-
-#book .action-button.delete-book {
-  background-color: var(--error);
-  color: var(--white);
-}
-
-#book .action-button.edit-book {
+#stock .action-button.increase-stock {
   background-color: var(--success);
   color: var(--white);
 }
 
-#book .action-button i {
+#stock .action-button.decrease-stock {
+  background-color: var(--error);
+  color: var(--white);
+}
+
+#stock .action-button i {
   margin-right: 3px;
 }
 
-#book .no-books-found {
+#stock .no-books-found {
   display: flex;
   justify-content: center;
   align-items: center;

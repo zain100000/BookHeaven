@@ -12,17 +12,13 @@ const Sidebar = () => {
       "/admin/books/manage-books",
       "/admin/books/book-details",
       "/admin/books/edit-book",
+
+      "/admin/stocks/manage-stock",
     ];
 
     const isBookRoute = bookRoutes.some((route) =>
       location.pathname.startsWith(route)
-    );
-
-    if (isBookRoute) {
-      setActiveLink("/admin/books/manage-books");
-    } else {
-      setActiveLink(location.pathname);
-    }
+    );    
   }, [location]);
 
   return (
@@ -53,6 +49,19 @@ const Sidebar = () => {
               <i className="fas fa-book"></i>
             </div>
             <span>Manage Books</span>
+          </NavLink>
+
+          <NavLink
+            to="/admin/stocks/manage-stock"
+            className={`sidebar-link ${
+              activeLink === "/admin/stocks/manage-stock" ? "active" : ""
+            }`}
+            onClick={() => setActiveLink("/admin/stocks/manage-stock")}
+          >
+            <div className="sidebar-icon">
+              <i className="fas fa-shopping-cart"></i>
+            </div>
+            <span>Manage Stock</span>
           </NavLink>
         </li>
       </ul>
