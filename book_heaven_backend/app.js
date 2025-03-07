@@ -10,6 +10,7 @@ const bookRoute = require("./routes/book.route");
 const cartRoute = require("./routes/cart.route");
 const favoriteRoute = require("./routes/favorite.route");
 const orderRoute = require("./routes/order.route");
+const reviewRoute = require("./routes/review.route");
 
 require("dotenv").config();
 
@@ -37,6 +38,7 @@ app.use("/api/book", bookRoute);
 app.use("/api/cart", cartRoute);
 app.use("/api/favorite", favoriteRoute);
 app.use("/api/order", orderRoute);
+app.use("/api/review", reviewRoute);
 
 mongoose
   .connect(process.env.MONGODB_URI)

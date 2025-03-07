@@ -71,7 +71,7 @@ const BookDetails = () => {
                 </tr>
                 <tr>
                   <td className="label color1">Ratings</td>
-                  <td className="value color2">{book.rating}</td>
+                  <td className="value color2">{book.rating}/5</td>
                   <td className="label color1">Publication Year</td>
                   <td className="value color2">{book.publicationYear}</td>
                 </tr>
