@@ -9,6 +9,7 @@ import {
 import Modal from "../../../utils/customModal/Modal";
 import { toast } from "react-hot-toast";
 import InputField from "../../../utils/customInputField/InputField";
+import Button from "../../../utils/customButton/Button";
 import { useNavigate } from "react-router-dom";
 import Loader from "../../../utils/customLoader/Loader";
 
@@ -82,18 +83,35 @@ const Books = () => {
     });
   };
 
+  const handleAddBookNavigate = () => {
+    navigate("/admin/books/add-book");
+  };
+
   return (
     <section id="book">
       <div className="books-container">
         <h2 className="books-title">Books List</h2>
         <div className="search-container" style={{ marginBottom: 15 }}>
-          <InputField
-            type="text"
-            placeholder="Search Books"
-            value={search}
-            onChange={handleSearch}
-            width={250}
-          />
+          <div className="container text-center">
+            <div className="row">
+              <div className="col-sm-12 col-md-12 col-lg-6">
+                <InputField
+                  type="text"
+                  placeholder="Search Books"
+                  value={search}
+                  onChange={handleSearch}
+                  width={300}
+                />
+              </div>
+              <div className="col-sm-12 col-md-12 col-lg-6">
+                <Button
+                  title="Add Book"
+                  width={150}
+                  onPress={handleAddBookNavigate}
+                />
+              </div>
+            </div>
+          </div>
         </div>
         <div className="table-responsive">
           {loading ? (

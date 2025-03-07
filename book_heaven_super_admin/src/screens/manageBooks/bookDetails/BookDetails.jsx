@@ -66,8 +66,8 @@ const BookDetails = () => {
                 <tr>
                   <td className="label color3">Publisher</td>
                   <td className="value color3">{book.publisher}</td>
-                  <td className="label color3">Reviews</td>
-                  <td className="value color3">{book.reviews}</td>
+                  <td className="label color3">Rating</td>
+                  <td className="value color3">{book.rating}</td>
                 </tr>
               </tbody>
             </table>

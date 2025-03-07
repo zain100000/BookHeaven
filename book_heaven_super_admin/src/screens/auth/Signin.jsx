@@ -28,14 +28,14 @@ const Signin = () => {
     const hasErrors = emailError || passwordError || !email || !password;
   }, [emailError, passwordError, email, password]);
 
-  const handleEmailChange = (value) => {
-    setEmail(value);
-    setEmailError(validateEmail(value));
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+    setEmailError(validateEmail(e.target.value));
   };
 
-  const handlePasswordChange = (value) => {
-    setPassword(value);
-    setPasswordError(validatePassword(value));
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
+    setPasswordError(validatePassword(e.target.value));
   };
 
   const handleSignin = async (event) => {

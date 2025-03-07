@@ -211,6 +211,9 @@ const AddBook = () => {
         setBookImagePreview(null);
         setBookFile(null);
         setFileName("Choose File");
+        setTimeout(() => {
+          navigate("/admin/books/mange-books");
+        }, 2000);
       } else if (addBook.rejected.match(resultAction)) {
         toast.error(resultAction.payload?.error || "Failed to add book.");
       } else {
