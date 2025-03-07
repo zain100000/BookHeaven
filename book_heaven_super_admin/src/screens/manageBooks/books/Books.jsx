@@ -115,7 +115,17 @@ const Books = () => {
         </div>
         <div className="table-responsive">
           {loading ? (
-            <Loader />
+            <div
+              className="loader-container"
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: '30vh'
+              }}
+            >
+              <Loader />
+            </div>
           ) : filteredBooks.length > 0 ? (
             <table className="table custom-table">
               <thead>

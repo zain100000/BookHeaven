@@ -16,7 +16,19 @@ const BookDetails = () => {
   }, [location.state]);
 
   if (loading) {
-    return <Loader />;
+    return (
+      <div
+        className="loader-container"
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height:'50vh'
+        }}
+      >
+        <Loader />
+      </div>
+    );
   }
 
   if (!book) {
@@ -29,7 +41,7 @@ const BookDetails = () => {
         <h1>Book Details</h1>
       </div>
       <div className="container">
-        <div className="profile">
+        <div className="profile" style={{marginTop: 120}}>
           <img
             src={book.bookImage || "placeholder_image.jpg"}
             alt="Book Detail"
@@ -60,14 +72,12 @@ const BookDetails = () => {
                 <tr>
                   <td className="label color1">Ratings</td>
                   <td className="value color2">{book.rating}</td>
-                  <td className="label color1">Year Of Publication</td>
+                  <td className="label color1">Publication Year</td>
                   <td className="value color2">{book.publicationYear}</td>
                 </tr>
                 <tr>
                   <td className="label color3">Publisher</td>
-                  <td className="value color3">{book.publisher}</td>
-                  <td className="label color3">Rating</td>
-                  <td className="value color3">{book.rating}</td>
+                  <td className="value color3">{book.publisher}</td>                  
                 </tr>
               </tbody>
             </table>
