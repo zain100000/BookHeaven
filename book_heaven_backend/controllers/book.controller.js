@@ -59,7 +59,7 @@ exports.addBook = async (req, res) => {
     await book.save();
 
     // Return success response
-    res.status(201).json({
+    res.status(200).json({
       success: true,
       message: "Book uploaded successfully",
       book: book,

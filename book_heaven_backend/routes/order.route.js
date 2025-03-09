@@ -9,6 +9,9 @@ router.post("/place-order", protect, orderController.placeOrder);
 // Route to fetch all orders (requires authentication)
 router.get("/get-all-orders", protect, orderController.getAllOrders);
 
+// Route to fetch order by id (requires authentication)
+router.get("/get-order-by-id/:id", protect, orderController.getOrderById);
+
 // Route to cancel an order by ID (requires authentication)
 router.put("/cancel-order/:id", protect, orderController.cancelOrder);
 

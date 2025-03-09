@@ -5,6 +5,7 @@ import authReducer from "../slices/authSlice";
 import userReducer from "../slices/userSlice";
 import bookReducer from "../slices/bookSlice";
 import reviewReducer from "../slices/reviewSlice";
+import orderReducer from "../slices/orderSlice";
 
 const localStorageWrapper = {
   getItem: (key) => {
@@ -37,6 +38,7 @@ const rootReducer = combineReducers({
   users: userReducer,
   books: bookReducer,
   reviews: reviewReducer,
+  orders: orderReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

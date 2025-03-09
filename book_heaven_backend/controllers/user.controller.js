@@ -225,3 +225,17 @@ exports.logoutUser = async (req, res, next) => {
     });
   }
 };
+
+
+exports.getLibrary = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).populate(
+      "library.bookId",
+      "title author bookImage"
+    ); // Add fields as needed
+
+    res.status(200).json({ success: true, library: user.library });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};

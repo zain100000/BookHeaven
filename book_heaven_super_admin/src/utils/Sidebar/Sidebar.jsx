@@ -11,7 +11,9 @@ const Sidebar = () => {
         <li className="sidebar-container">
           <NavLink
             to="/admin/dashboard"
-            className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`}
+            className={({ isActive }) =>
+              `sidebar-link ${isActive ? "active" : ""}`
+            }
           >
             <div className="sidebar-icon">
               <i className="fas fa-home"></i>
@@ -22,7 +24,9 @@ const Sidebar = () => {
           <NavLink
             to="/admin/books/manage-books"
             className={() =>
-              `sidebar-link ${location.pathname.startsWith("/admin/books") ? "active" : ""}`
+              `sidebar-link ${
+                location.pathname.startsWith("/admin/books") ? "active" : ""
+              }`
             }
           >
             <div className="sidebar-icon">
@@ -34,7 +38,9 @@ const Sidebar = () => {
           <NavLink
             to="/admin/stocks/manage-stocks"
             className={() =>
-              `sidebar-link ${location.pathname.startsWith("/admin/stocks") ? "active" : ""}`
+              `sidebar-link ${
+                location.pathname.startsWith("/admin/stocks") ? "active" : ""
+              }`
             }
           >
             <div className="sidebar-icon">
@@ -46,13 +52,29 @@ const Sidebar = () => {
           <NavLink
             to="/admin/reviews/manage-reviews"
             className={() =>
-              `sidebar-link ${location.pathname.startsWith("/admin/reviews") ? "active" : ""}`
+              `sidebar-link ${
+                location.pathname.startsWith("/admin/reviews") ? "active" : ""
+              }`
             }
           >
             <div className="sidebar-icon">
               <i className="fas fa-star"></i>
             </div>
             <span>Manage Reviews</span>
+          </NavLink>
+
+          <NavLink
+            to="/admin/orders/manage-orders"
+            className={() =>
+              `sidebar-link ${
+                location.pathname.startsWith("/admin/orders") ? "active" : ""
+              }`
+            }
+          >
+            <div className="sidebar-icon">
+              <i className="fas fa-shopping-bag"></i>
+            </div>
+            <span>Manage Orders</span>
           </NavLink>
         </li>
       </ul>

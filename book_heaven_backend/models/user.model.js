@@ -98,6 +98,26 @@ const userSchema = new mongoose.Schema(
       },
     ],
 
+    // Library for purchased books
+    library: [
+      {
+        bookId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Book",
+          required: true,
+        },
+        bookFile: {
+          // Cloudinary URL of the purchased book
+          type: String,
+          required: true,
+        },
+        purchasedAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
+
     // Timestamp of when the user was created (default: current time)
     createdAt: {
       type: Date,

@@ -1,0 +1,179 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
+
+:root {
+  --font-family: "Roboto", serif;
+  --primary: #7d64c3;
+  --primary-light: #a691e3;
+  --success: #35f338;
+  --error: #f00221;
+  --white: #ffffff;
+  --dark: #333333;
+  --gray: #dde0e5;
+  --light-gray: #f7f7f7;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  text-decoration: none;
+  list-style: none;
+}
+
+/* ------------------------------ ORDER SCREEN CSS ----------------------------------- */
+/* ----------------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------------------------- */
+
+#order .orders-container {
+  padding: 20px;
+  background: var(--white);
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#order .orders-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 20px;
+  margin-left: 14px;
+}
+
+#order .search-container {
+  margin-bottom: 20px;
+}
+
+#order .loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+}
+
+#order .table-responsive {
+  overflow-x: auto;
+}
+
+#order .custom-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--white);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+#order .custom-table thead {
+  background: var(--primary);
+  color: var(--white);
+}
+
+#order .custom-table th,
+#order .custom-table td {
+  padding: 12px 15px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+#order .custom-table tbody tr {
+  transition: background 0.3s ease-in-out, transform 0.2s ease;
+}
+
+#order .custom-table tbody tr:hover {
+  background: var(--gray);
+  transform: scale(1.02);
+  cursor: pointer;
+}
+
+#order .order-id {
+  font-weight: 500;
+  color: var(--primary);
+}
+
+#order .order-customer {
+  font-weight: 500;
+}
+
+#order .order-status .status-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+#order .order-status .status-badge.pending {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+#order .order-status .status-badge.completed {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+#order .order-status .status-badge.cancelled {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+#order .actions {
+  display: flex;
+  gap: 8px;
+}
+
+#order .action-button {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-left: 5px;
+}
+
+#order .action-button.view-detail {
+  background-color: var(--primary);
+  color: white;
+}
+
+#order .action-button.status-change {
+  background-color: var(--success);
+  color: white;
+}
+
+#order .action-button i {
+  margin-right: 5px;
+}
+
+.modal-btn-processing {
+  background: #ffc107;
+  color: var(--dark);
+}
+
+.modal-btn-shipped {
+  background: var(--primary-light);
+  color: var(--white);
+}
+
+.modal-btn-delivered {
+  background: var(--success);
+  color: var(--white);
+}
+
+#order .no-orders-found {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #d32f2f;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 20px;
+  background-color: #ffebee;
+  border-radius: 8px;
+  margin-top: 20px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
