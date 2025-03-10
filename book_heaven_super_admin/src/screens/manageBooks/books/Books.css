@@ -122,6 +122,11 @@
   margin-right: 3px;
 }
 
+.modal-btn-danger {
+  background-color: var(--error);
+  color: var(--white);
+}
+
 #book .no-books-found {
   display: flex;
   justify-content: center;
