@@ -73,6 +73,30 @@ export const updateOrderStatus = createAsyncThunk(
   }
 );
 
+export const updatePaymentStatus = createAsyncThunk(
+  "order/payment/updatePaymentStatus",
+  async ({ orderId, payment }, { getState }) => {
+    const token = getToken();
+
+    // Make the API call to update the order payment status
+    const response = await axios.patch(
+      `${BACKEND_API_URL}/order/payment/update-payment-status/${orderId}`,
+      { payment },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    // Update the local state with the new order payment status
+    const { orders } = getState().orders;
+    return orders.map((order) =>
+      order._id === orderId
+        ? { ...order, payment: response.data.order.payment }
+        : order
+    );
+  }
+);
+
 const orderSlice = createSlice({
   name: "orders",
   initialState: {
@@ -120,6 +144,18 @@ const orderSlice = createSlice({
         state.orders = action.payload;
       })
       .addCase(updateOrderStatus.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(updatePaymentStatus.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updatePaymentStatus.fulfilled, (state, action) => {
+        state.loading = false;
+        state.orders = action.payload;
+      })
+      .addCase(updatePaymentStatus.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

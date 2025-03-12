@@ -59,21 +59,33 @@ const OrderDetails = () => {
                     </span>
                   </td>
                 </tr>
+
                 <tr>
                   <td className="label color3">Placed At</td>
                   <td className="value color3">
                     {new Date(order.placedAt).toLocaleString()}
                   </td>
+
+                  <td className="label color2">Payment Status</td>
+                  <td className="value color2">
+                    <span
+                      className={`status-badge ${order.payment.toLowerCase()}`}
+                    >
+                      {order.payment}
+                    </span>
+                  </td>
+                </tr>
+
+                <tr>
                   <td className="label color4">Customer</td>
                   <td className="value color4">{order.userId?.userName}</td>
-                </tr>
-                <tr>
                   <td className="label color1">Customer Email</td>
                   <td className="value color1">{order.userId?.email}</td>
+                </tr>
+
+                <tr>
                   <td className="label color2">Customer Phone</td>
                   <td className="value color2">{order.userId?.phone}</td>
-                </tr>
-                <tr>
                   <td className="label color2">Customer Address</td>
                   <td className="value color2">{order.userId?.address}</td>
                 </tr>

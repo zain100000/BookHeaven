@@ -278,3 +278,54 @@ exports.updateOrderStatus = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
+// Update payment status of an order (only for SuperAdmin)
+exports.updatePaymentStatus = async (req, res) => {
+  try {
+    const { payment } = req.body; // Get payment status from request body
+    const { id } = req.params;
+    const userRole = req.user.role;
+
+    // Authorization check
+    if (userRole !== "SUPERADMIN") {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized: Only Super Admin can update payment status",
+      });
+    }
+
+    // Find the order
+    const order = await Order.findById(id);
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    // Validate payment status
+    const validPaymentStatuses = ["PENDING", "PAID"];
+    if (!validPaymentStatuses.includes(payment)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid payment status. Allowed values: PENDING, PAID",
+      });
+    }
+
+    // Update payment status
+    order.payment = payment;
+    await order.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Payment status updated successfully",
+      order,
+    });
+  } catch (error) {
+    console.error("Payment Status Update Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};

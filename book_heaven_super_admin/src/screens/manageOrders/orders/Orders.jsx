@@ -5,11 +5,13 @@ import {
   getAllOrders,
   setOrders,
   updateOrderStatus,
+  updatePaymentStatus,
 } from "../../../redux/slices/orderSlice";
 import { useNavigate } from "react-router-dom";
 import Loader from "../../../utils/customLoader/Loader";
 import InputField from "../../../utils/customInputField/InputField";
 import Modal from "../../../utils/customModal/Modal";
+import { toast } from "react-hot-toast";
 
 const Orders = () => {
   const dispatch = useDispatch();
@@ -20,6 +22,8 @@ const Orders = () => {
   const [search, setSearch] = useState("");
   const [selectedOrder, setSelectedOrder] = useState(false);
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
+  const [isPaymentStatusModalOpen, setIsPaymentStatusModalOpen] =
+    useState(false);
   const [loadingAction, setLoadingAction] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -65,9 +69,7 @@ const Orders = () => {
           })
         ).unwrap();
 
-        toast.success(
-          `Status changed to ${status.toLowerCase()} successfully!`
-        );
+        toast.success(`Status changed to successfully!`);
 
         // Update local state
         const updatedOrders = orders.map((order) =>
@@ -80,6 +82,41 @@ const Orders = () => {
     } finally {
       setLoadingAction(null);
       setIsStatusModalOpen(false);
+      setSelectedOrder(null);
+    }
+  };
+
+  const handlePaymentStatusChange = (order) => {
+    setSelectedOrder(order);
+    setIsPaymentStatusModalOpen(true);
+  };
+
+  const changePaymentStatus = async (payment) => {
+    setLoadingAction(payment);
+    try {
+      if (selectedOrder?._id) {
+        await dispatch(
+          updatePaymentStatus({
+            orderId: selectedOrder._id,
+            payment: payment,
+          })
+        ).unwrap();
+
+        toast.success(
+          `Payment Status changed successfully!`
+        );
+
+        // Update local state
+        const updatedOrders = orders.map((order) =>
+          order._id === selectedOrder._id ? { ...order, payment } : order
+        );
+        dispatch(setOrders(updatedOrders));
+      }
+    } catch (error) {
+      toast.error(`Failed to change payment status: ${error.message}`);
+    } finally {
+      setLoadingAction(null);
+      setIsPaymentStatusModalOpen(false);
       setSelectedOrder(null);
     }
   };
@@ -115,6 +152,7 @@ const Orders = () => {
                 <tr>
                   <th>Order ID</th>
                   <th>Customer</th>
+                  <th>Payment</th>
                   <th>Status</th>
                   <th>Actions</th>
                 </tr>
@@ -127,6 +165,13 @@ const Orders = () => {
                     </td>
                     <td className="order-customer">
                       {order.userId?.userName || "N/A"}
+                    </td>
+                    <td className="payment-status">
+                      <span
+                        className={`payment-badge ${order.payment.toLowerCase()}`}
+                      >
+                        {order.payment}
+                      </span>
                     </td>
                     <td className="order-status">
                       <span
@@ -148,6 +193,13 @@ const Orders = () => {
                         onClick={() => handleStatusChange(order)}
                       >
                         <i className="fas fa-sync"></i>
+                      </button>
+
+                      <button
+                        className="action-button payment-status-change"
+                        onClick={() => handlePaymentStatusChange(order)}
+                      >
+                        <i className="fas fa-money-bill"></i>
                       </button>
                     </td>
                   </tr>
@@ -175,6 +227,23 @@ const Orders = () => {
         }))}
       >
         Are you sure you want to change the status of this order?
+      </Modal>
+
+      <Modal
+        isOpen={isPaymentStatusModalOpen}
+        onClose={() => setIsPaymentStatusModalOpen(false)}
+        title={`Change Payment Status for #${
+          selectedOrder?._id?.substring(18, 24).toUpperCase() || "Order"
+        }`}
+        loading={loadingAction !== null}
+        buttons={["PAID"].map((payment) => ({
+          label: payment.charAt(0) + payment.slice(1).toLowerCase(),
+          className: `modal-btn-${payment.toLowerCase()}`,
+          onClick: () => changePaymentStatus(payment),
+          loading: loadingAction === payment,
+        }))}
+      >
+        Are you sure you want to change the payment status of this order?
       </Modal>
     </section>
   );

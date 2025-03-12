@@ -22,5 +22,12 @@ router.patch(
   orderController.updateOrderStatus
 );
 
+// Route to update the status of an payment by ID (requires authentication)
+router.patch(
+  "/payment/update-payment-status/:id",
+  protect,
+  orderController.updatePaymentStatus
+);
+
 // Export the router for use in the main application
 module.exports = router;

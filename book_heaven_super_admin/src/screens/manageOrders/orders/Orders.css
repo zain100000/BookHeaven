@@ -95,6 +95,25 @@
   font-weight: 500;
 }
 
+#order .payment-status .payment-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+#order .payment-status .payment-badge.pending {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+#order .payment-status .payment-badge.paid {
+  background-color: #d4edda;
+  color: #155724;
+}
+
 #order .order-status .status-badge {
   display: inline-block;
   padding: 4px 8px;
@@ -135,12 +154,17 @@
 
 #order .action-button.view-detail {
   background-color: var(--primary);
-  color: white;
+  color: var(--white);
 }
 
 #order .action-button.status-change {
   background-color: var(--success);
-  color: white;
+  color: var(--white);
+}
+
+#order .action-button.payment-status-change {
+  background-color: var(--primary);
+  color: var(--white);
 }
 
 #order .action-button i {
@@ -158,6 +182,11 @@
 }
 
 .modal-btn-delivered {
+  background: var(--success);
+  color: var(--white);
+}
+
+.modal-btn-paid {
   background: var(--success);
   color: var(--white);
 }

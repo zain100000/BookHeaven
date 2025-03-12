@@ -33,6 +33,13 @@ const orderSchema = new mongoose.Schema(
       default: "PENDING",
     },
 
+    payment: {
+      type: String,
+      enum: ["PENDING", "PAID"], // Valid payment states
+      default: "PENDING", // Default state for new orders
+      required: true,
+    },
+
     // Timestamp of when the order was placed (default: current time)
     placedAt: {
       type: Date,
