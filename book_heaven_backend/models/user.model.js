@@ -30,13 +30,11 @@ const userSchema = new mongoose.Schema(
     // Address of the user (required)
     address: {
       type: String,
-      required: true,
     },
 
     // Phone number of the user (required)
     phone: {
       type: String,
-      required: true,
     },
 
     // Array of items in the user's cart
