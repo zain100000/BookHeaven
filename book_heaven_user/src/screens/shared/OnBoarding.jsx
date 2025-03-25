@@ -286,7 +286,7 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    fontSize: width * 0.07,
+    fontSize: theme.typography.fontSize.xxl,
     fontFamily: theme.typography.fontFamilySemiBold,
     textAlign: 'center',
     marginBottom: height * 0.02,
@@ -296,7 +296,7 @@ const styles = StyleSheet.create({
   },
 
   description: {
-    fontSize: width * 0.04,
+    fontSize: theme.typography.fontSize.md,
     fontFamily: theme.typography.fontFamilyRegular,
     textAlign: 'center',
     marginBottom: height * 0.02,

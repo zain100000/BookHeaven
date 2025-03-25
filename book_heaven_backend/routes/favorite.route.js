@@ -7,7 +7,14 @@ const favoriteController = require("../controllers/favorite.controller");
 router.post("/add-to-favorite", protect, favoriteController.addToFavorite);
 
 // Route to remove a book from the user's favorites (requires authentication)
-router.post("/remove-from-favorite", protect, favoriteController.removeFromFavorite);
+router.post(
+  "/remove-to-favorite",
+  protect,
+  favoriteController.removeFromFavorite
+);
+
+// Route to get all favorite (requires authentication)
+router.get("/get-all-favorites", protect, favoriteController.getAllFavorites);
 
 // Export the router for use in the main application
 module.exports = router;

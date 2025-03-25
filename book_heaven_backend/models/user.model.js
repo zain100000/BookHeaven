@@ -61,12 +61,14 @@ const userSchema = new mongoose.Schema(
     // Array of favorite books for the user
     favorites: [
       {
-        // ID of the favorite book (references the Book model)
-        favoriteId: {
+        _id: {
+          type: mongoose.Schema.Types.ObjectId,
+          auto: true,
+        },
+        bookId: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "Book",
         },
-        // ID of the user who favorited the book (references the User model)
         userId: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "User",

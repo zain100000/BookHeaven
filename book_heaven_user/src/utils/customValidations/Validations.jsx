@@ -29,12 +29,12 @@ export const validatePassword = password => {
   return '';
 };
 
-export const validateContactNumber = contactNumber => {
-  const contactNumberPattern = /^[0-9]{11}$/;
-  if (!contactNumber) {
+export const validatePhone = phone => {
+  const phonePattern = /^[0-9]{11}$/;
+  if (!phone) {
     return 'Contact number is required';
   }
-  if (!contactNumberPattern.test(contactNumber)) {
+  if (!phonePattern.test(phone)) {
     return 'Contact number must be 11 digits';
   }
   return '';
@@ -45,7 +45,7 @@ export const validateFields = fields => {
     email: validateEmail,
     password: validatePassword,
     fullName: validateName,
-    contactNumber: validateContactNumber,
+    phone: validatePhone,
   };
 
   const errors = {};

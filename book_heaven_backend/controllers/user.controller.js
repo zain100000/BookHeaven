@@ -1,7 +1,11 @@
 const bcrypt = require("bcrypt");
 const User = require("../models/user.model");
-const profilePictureUpload = require("../utilities/cloudinary/cloudinary.utility");
 const jwt = require("jsonwebtoken");
+const profilePictureUpload = require("../utilities/cloudinary/cloudinary.utility");
+const {
+  uploadToCloudinary,
+} = require("../utilities/cloudinary/cloudinary.utility");
+const { v2: cloudinary } = require("cloudinary");
 
 // Register a new user
 exports.registerUser = async (req, res) => {
@@ -109,7 +113,6 @@ exports.loginUser = async (req, res) => {
     jwt.sign(
       payload,
       process.env.JWT_SECRET,
-      { expiresIn: "1h" }, // Token expires in 1 hour
       (err, token) => {
         if (err) {
           return res.status(500).json({
@@ -207,6 +210,69 @@ exports.resetUserPassword = async (req, res) => {
   }
 };
 
+// Update User
+exports.updateUser = async (req, res) => {
+  const { id } = req.params;
+
+  if (!id) {
+    return res.status(400).json({ success: false, message: "Invalid User ID" });
+  }
+
+  try {
+    let user = await User.findById(id);
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found." });
+    }
+
+    // Update other fields
+    if (req.body.userName) user.userName = req.body.userName;
+    if (req.body.phone) user.phone = req.body.phone;
+    if (req.body.address) user.address = req.body.address;
+
+    // Handle Profile Picture Upload
+    if (req.files && req.files.profilePicture) {
+      const newProfilePicture = req.files.profilePicture[0]; // Get the uploaded file
+
+      if (user.profilePicture) {
+        try {
+          // Extract public ID from the existing Cloudinary URL
+          const publicId = user.profilePicture.split("/").pop().split(".")[0];
+
+          // Delete old profile picture from Cloudinary
+          await cloudinary.uploader.destroy(
+            `BookHeaven/profilePictures/${publicId}`
+          );
+        } catch (error) {
+          console.error("❌ Error deleting old profile picture:", error);
+        }
+      }
+
+      // Upload new profile picture to Cloudinary
+      const result = await uploadToCloudinary(
+        newProfilePicture,
+        "profilePicture"
+      );
+
+      // Update the user's profile picture URL
+      user.profilePicture = result.url;
+    }
+
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "User Updated Successfully.",
+      user,
+    });
+  } catch (err) {
+    console.error("Error updating user:", err);
+    return res.status(500).json({ success: false, message: "Server Error" });
+  }
+};
+
 // Logout user
 exports.logoutUser = async (req, res, next) => {
   try {
@@ -226,7 +292,55 @@ exports.logoutUser = async (req, res, next) => {
   }
 };
 
+// Delete Profile
+// exports.deleteProfile = async (req, res) => {
+//   try {
+//     const { id } = req.params;
 
+//     // Find the user by ID
+//     const user = await User.findById(id);
+//     if (!user) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "User Not Found!",
+//       });
+//     }
+
+//     // Delete profile picture from Cloudinary if it exists
+//     if (user.profilePicture) {
+//       try {
+//         const publicId = user.profilePicture.split("/").pop().split(".")[0];
+//         await cloudinary.uploader.destroy(
+//           `BookHeaven/profilePictures/${publicId}`
+//         );
+//       } catch (error) {
+//         console.error("❌ Error deleting profile picture:", error);
+//       }
+//     }
+
+//     // Delete related data (cart, favorites, orders, library)
+//     await Cart.deleteMany({ userId: id }); // Delete all user's cart items
+//     await Favorite.deleteMany({ userId: id }); // Delete all user's favorite items
+//     await Order.deleteMany({ userId: id }); // Delete all user's orders
+//     await Library.deleteMany({ userId: id }); // Delete all user's library items
+
+//     // Finally, delete the user profile
+//     await User.findByIdAndDelete(id);
+
+//     res.status(200).json({
+//       success: true,
+//       message: "User profile and all associated data deleted successfully!",
+//     });
+//   } catch (error) {
+//     console.error("❌ Error deleting user profile:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "Server Error",
+//     });
+//   }
+// };
+
+// get library
 exports.getLibrary = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).populate(

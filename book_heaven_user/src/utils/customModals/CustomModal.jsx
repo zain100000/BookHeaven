@@ -113,14 +113,14 @@ const styles = StyleSheet.create({
   modalText: {
     marginBottom: height * 0.01,
     textAlign: 'center',
-    fontSize: width * 0.05,
+    fontSize: theme.typography.fontSize.lg,
     color: theme.colors.dark,
   },
 
   descriptionText: {
     textAlign: 'center',
     color: theme.colors.dark,
-    fontSize: width * 0.04,
+    fontSize: theme.typography.fontSize.md,
   },
 
   buttonContainer: {
@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
 
   primaryButtonText: {
     color: theme.colors.white,
-    fontSize: width * 0.04,
+    fontSize: theme.typography.fontSize.md,
   },
 
   secondaryButton: {
@@ -159,6 +159,6 @@ const styles = StyleSheet.create({
 
   secondaryButtonText: {
     color: theme.colors.white,
-    fontSize: width * 0.04,
+    fontSize: theme.typography.fontSize.md,
   },
 });

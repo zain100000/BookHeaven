@@ -450,7 +450,7 @@ const styles = StyleSheet.create({
   },
 
   headerTitle: {
-    fontSize: width * 0.07,
+    fontSize: theme.typography.fontSize.xxl,
     fontFamily: theme.typography.fontFamilySemiBold,
     color: theme.colors.white,
     textTransform: 'capitalize',
@@ -458,7 +458,7 @@ const styles = StyleSheet.create({
   },
 
   headerDescription: {
-    fontSize: width * 0.044,
+    fontSize: theme.typography.fontSize.lg,
     fontFamily: theme.typography.fontFamilyMedium,
     color: theme.colors.white,
     left: width * 0.01,
@@ -493,12 +493,12 @@ const styles = StyleSheet.create({
   },
 
   signinText: {
-    fontSize: width * 0.045,
+    fontSize: theme.typography.fontSize.md,
     fontFamily: theme.typography.fontFamilyRegular,
   },
 
   signinLink: {
-    fontSize: width * 0.045,
-    fontFamily: theme.typography.fontFamilyRegular,
+    fontSize: theme.typography.fontSize.md,
+    fontFamily: theme.typography.fontFamilyBold,
   },
 });

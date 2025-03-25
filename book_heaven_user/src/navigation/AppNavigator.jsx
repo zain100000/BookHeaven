@@ -11,6 +11,14 @@ import OnBoarding from '../screens/shared/OnBoarding';
 import Signin from '../screens/auth/Signin';
 import Signup from '../screens/auth/Signup';
 
+// Dashboard Imports
+import BottomNavigator from '../navigation/bottomNavigator/BottomNavigator';
+
+// Profile Imports
+import Account from '../screens/profileModule/profileScreens/subProfileScreens/Account';
+import Address from '../screens/profileModule/profileScreens/subProfileScreens/Address';
+import Favorites from '../screens/profileModule/profileScreens/subProfileScreens/Favorites';
+
 const Stack = createNativeStackNavigator();
 
 const AppNavigator = () => {
@@ -42,6 +50,31 @@ const AppNavigator = () => {
           {props => <Signup {...props} setStatusBarColor={setStatusBarColor} />}
         </Stack.Screen>
 
+        {/* Dashboard Routes */}
+        <Stack.Screen name="Home">
+          {props => (
+            <BottomNavigator {...props} setStatusBarColor={setStatusBarColor} />
+          )}
+        </Stack.Screen>
+
+        {/* Profile Routes */}
+        <Stack.Screen name="My_Account">
+          {props => (
+            <Account {...props} setStatusBarColor={setStatusBarColor} />
+          )}
+        </Stack.Screen>
+
+        <Stack.Screen name="Address">
+          {props => (
+            <Address {...props} setStatusBarColor={setStatusBarColor} />
+          )}
+        </Stack.Screen>
+
+        <Stack.Screen name="Favorites">
+          {props => (
+            <Favorites {...props} setStatusBarColor={setStatusBarColor} />
+          )}
+        </Stack.Screen>
       </Stack.Navigator>
     </>
   );

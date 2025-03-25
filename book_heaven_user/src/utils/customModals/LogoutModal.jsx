@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import {
   Modal,
   View,
@@ -42,7 +42,7 @@ const LogoutModal = ({visible, title, description, onClose}) => {
 
           setTimeout(() => {
             setShowSuccessModal(false);
-            navigation.replace('OnBoard');
+            navigation.replace('Signin');
           }, 2000);
         }, 2000);
       } else {
@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
     width: width * 0.92,
-    height: height * 0.48,
+    height: height * 0.44,
   },
 
   animation: {

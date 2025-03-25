@@ -23,6 +23,14 @@ router.get("/get-books-library", protect, userController.getLibrary);
 // Route to reset a user's password (requires authentication)
 router.patch("/reset-user-password", protect, userController.resetUserPassword);
 
+// Route to update a user's profile (requires authentication)
+router.patch(
+  "/update-user/:id",
+  profilePictureUpload.upload,
+  protect,
+  userController.updateUser
+);
+
 // Route to log out a user (requires authentication)
 router.post("/logout-user", protect, userController.logoutUser);
 

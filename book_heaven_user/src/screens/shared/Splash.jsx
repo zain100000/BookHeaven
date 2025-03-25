@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   StyleSheet,
@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import {useNavigation} from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {theme} from '../../styles/theme';
 import {globalStyles} from '../../styles/globalStyles';
 
@@ -17,6 +18,7 @@ const {width, height} = Dimensions.get('screen');
 const Splash = () => {
   const navigation = useNavigation();
   const colorScheme = useColorScheme();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const statusBarColor =
@@ -28,10 +30,32 @@ const Splash = () => {
   }, [colorScheme]);
 
   useEffect(() => {
-    setTimeout(() => {
-      navigation.replace('OnBoard');
-    }, 2000);
-  });
+    const checkSession = async () => {
+      try {
+        await new Promise(resolve => setTimeout(resolve, 1500));
+
+        const token = await AsyncStorage.getItem('authToken');
+        console.log(token)
+
+        if (token) {
+          navigation.reset({
+            index: 0,
+            routes: [{name: 'Home'}],
+          });
+        } else {
+          navigation.reset({
+            index: 0,
+            routes: [{name: 'OnBoard'}],
+          });
+        }
+      } catch (error) {
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkSession();
+  }, []);
 
   return (
     <SafeAreaView
@@ -50,12 +74,11 @@ const Splash = () => {
           style={styles.imgContainer}>
           <Animatable.Image
             source={require('../../assets/splashScreen/splash-logo.png')}
-            animation={'fadeIn'}
+            animation="fadeIn"
             duration={1500}
             style={styles.Img}
           />
         </Animatable.View>
-
         <Animatable.Text
           animation="fadeInUp"
           duration={1500}
@@ -68,7 +91,6 @@ const Splash = () => {
           ]}>
           Book Heaven
         </Animatable.Text>
-
         <Animatable.Text
           animation="fadeInUp"
           duration={2000}
@@ -113,14 +135,14 @@ const styles = StyleSheet.create({
   },
 
   splashTitle: {
-    fontSize: width * 0.094,
+    fontSize: theme.typography.fontSize.xxl,
+    fontFamily: theme.typography.fontFamilySemiBold,
     textAlign: 'center',
     marginTop: height * 0.02,
-    fontFamily: theme.typography.fontFamilySemiBold,
   },
 
   splashDescription: {
-    fontSize: width * 0.054,
+    fontSize: theme.typography.fontSize.lg,
     textAlign: 'center',
     marginTop: height * 0.01,
     fontWeight: '600',

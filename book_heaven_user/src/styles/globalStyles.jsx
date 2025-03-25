@@ -94,23 +94,22 @@ export const globalStyles = StyleSheet.create({
   },
 
   card: {
-    borderRadius: moderateScale(theme.borderRadius.medium),
-    padding: moderateScale(theme.spacing(0.6)),
-    gap: verticalScale(theme.gap(2)),
+    borderRadius: moderateScale(theme.borderRadius.circle),
+    padding: moderateScale(theme.spacing(0.14)),
+    gap: verticalScale(theme.gap(1)),
     shadowColor: theme.colors.black,
     shadowOffset: {width: scale(0), height: verticalScale(2)},
     shadowOpacity: 0.3,
     shadowRadius: moderateScale(7),
     elevation: 6,
-    minWidth: width * 0.8,
-    marginHorizontal: scale(8),
+    minWidth: width * 0.9,
   },
 
   cardTitle: {
-    fontFamily: theme.typography.fontFamilyMedium,
-    fontSize: moderateScale(theme.typography.fontSize.lg),
+    fontFamily: theme.typography.fontFamilySemiBold,
+    fontSize: moderateScale(theme.typography.fontSize.md),
     color: theme.colors.black,
-    marginBottom: verticalScale(theme.spacing(1)),
+    marginBottom: verticalScale(theme.spacing(0.44)),
   },
 
   cardContent: {
