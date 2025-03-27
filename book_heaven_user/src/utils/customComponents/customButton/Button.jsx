@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  TouchableOpacity,
-  Text,
-  ActivityIndicator,
-  View,
-  useColorScheme,
-} from 'react-native';
+import {TouchableOpacity, Text, ActivityIndicator, View} from 'react-native';
 import {globalStyles} from '../../../styles/globalStyles';
 import {theme} from '../../../styles/theme';
 
@@ -17,14 +11,9 @@ const Button = ({
   textStyle,
   width,
   disabled,
+  backgroundColor,
+  textColor,
 }) => {
-  const colorScheme = useColorScheme();
-
-  const backgroundColor =
-    colorScheme === 'dark' ? theme.colors.white : theme.colors.secondary;
-  const textColor =
-    colorScheme === 'dark' ? theme.colors.dark : theme.colors.white;
-
   return (
     <View>
       <TouchableOpacity

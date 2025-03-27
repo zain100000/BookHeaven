@@ -3,15 +3,10 @@ import {
   StyleSheet,
   View,
   Dimensions,
-  useColorScheme,
   StatusBar,
   SafeAreaView,
-  ScrollView,
-  TouchableOpacity,
   Animated,
   Easing,
-  Image,
-  Text,
 } from 'react-native';
 import {theme} from '../../../../styles/theme';
 import {globalStyles} from '../../../../styles/globalStyles';
@@ -22,20 +17,15 @@ const {width, height} = Dimensions.get('screen');
 
 const Address = () => {
   const navigation = useNavigation();
-  const colorScheme = useColorScheme();
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const headerTranslateY = useRef(new Animated.Value(30)).current;
   const formTranslateY = useRef(new Animated.Value(50)).current;
 
   useEffect(() => {
-    const statusBarColor =
-      colorScheme === 'dark' ? theme.colors.dark : theme.colors.primary;
+    const statusBarColor = theme.colors.primary;
     StatusBar.setBackgroundColor(statusBarColor);
-    StatusBar.setBarStyle(
-      colorScheme === 'dark' ? 'light-content' : 'dark-content',
-    );
-  }, [colorScheme]);
+  }, []);
 
   useEffect(() => {
     Animated.parallel([
@@ -66,8 +56,7 @@ const Address = () => {
         globalStyles.container,
         styles.primaryContainer,
         {
-          backgroundColor:
-            colorScheme === 'dark' ? theme.colors.dark : theme.colors.white,
+          backgroundColor: theme.colors.white,
         },
       ]}>
       <View style={styles.headerContainer}>

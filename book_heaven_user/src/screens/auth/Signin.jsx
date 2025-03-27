@@ -74,13 +74,9 @@ const Signin = () => {
   }, []);
 
   useEffect(() => {
-    const statusBarColor =
-      colorScheme === 'dark' ? theme.colors.dark : theme.colors.primary;
+    const statusBarColor = theme.colors.primary;
     StatusBar.setBackgroundColor(statusBarColor);
-    StatusBar.setBarStyle(
-      colorScheme === 'dark' ? 'light-content' : 'dark-content',
-    );
-  }, [colorScheme]);
+  }, []);
 
   useEffect(() => {
     const hasErrors =
@@ -161,8 +157,7 @@ const Signin = () => {
         globalStyles.container,
         styles.primaryContainer,
         {
-          backgroundColor:
-            colorScheme === 'dark' ? theme.colors.dark : theme.colors.primary,
+          backgroundColor: theme.colors.primary,
         },
       ]}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -195,10 +190,7 @@ const Signin = () => {
                 globalStyles.inputLabel,
                 styles.label,
                 {
-                  color:
-                    colorScheme === 'dark'
-                      ? theme.colors.white
-                      : theme.colors.white,
+                  color: theme.colors.white,
                 },
               ]}>
               Email
@@ -236,10 +228,7 @@ const Signin = () => {
                 globalStyles.inputLabel,
                 styles.label,
                 {
-                  color:
-                    colorScheme === 'dark'
-                      ? theme.colors.white
-                      : theme.colors.white,
+                  color: theme.colors.white,
                 },
               ]}>
               Password
@@ -301,6 +290,8 @@ const Signin = () => {
               disabled={!isButtonEnabled}
               onPress={handleSignin}
               width={width * 0.96}
+              backgroundColor={theme.colors.secondary}
+              textColor={theme.colors.white}
             />
           </Animated.View>
 
@@ -324,10 +315,7 @@ const Signin = () => {
               style={[
                 styles.signupText,
                 {
-                  color:
-                    colorScheme === 'dark'
-                      ? theme.colors.white
-                      : theme.colors.white,
+                  color: theme.colors.white,
                 },
               ]}>
               Don't have an account?
@@ -337,10 +325,7 @@ const Signin = () => {
                 style={[
                   styles.signupLink,
                   {
-                    color:
-                      colorScheme === 'dark'
-                        ? theme.colors.white
-                        : theme.colors.secondary,
+                    color: theme.colors.secondary,
                   },
                 ]}>
                 Sign Up

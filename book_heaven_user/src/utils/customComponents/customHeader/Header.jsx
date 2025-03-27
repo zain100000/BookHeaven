@@ -6,22 +6,18 @@ import {
   Dimensions,
   StyleSheet,
   TouchableOpacity,
-  useColorScheme,
 } from 'react-native';
 import {theme} from '../../../styles/theme';
 
 const {width, height} = Dimensions.get('screen');
 
 const Header = ({title, leftIcon, rightIcon, onPressLeft, onPressRight}) => {
-  const colorScheme = useColorScheme();
-
   return (
     <View
       style={[
         styles.headerContainer,
         {
-          backgroundColor:
-            colorScheme === 'dark' ? theme.colors.dark : theme.colors.primary,
+          backgroundColor: theme.colors.primary,
         },
       ]}>
       <View style={styles.iconContainer}>
@@ -32,10 +28,7 @@ const Header = ({title, leftIcon, rightIcon, onPressLeft, onPressRight}) => {
               style={[
                 styles.icon,
                 {
-                  tintColor:
-                    colorScheme === 'dark'
-                      ? theme.colors.white
-                      : theme.colors.white,
+                  tintColor: theme.colors.white,
                 },
               ]}
             />
@@ -47,8 +40,7 @@ const Header = ({title, leftIcon, rightIcon, onPressLeft, onPressRight}) => {
         style={[
           styles.title,
           {
-            color:
-              colorScheme === 'dark' ? theme.colors.white : theme.colors.white,
+            color: theme.colors.white,
           },
         ]}>
         {title}
@@ -62,10 +54,7 @@ const Header = ({title, leftIcon, rightIcon, onPressLeft, onPressRight}) => {
               style={[
                 styles.icon,
                 {
-                  tintColor:
-                    colorScheme === 'dark'
-                      ? theme.colors.white
-                      : theme.colors.white,
+                  tintColor: theme.colors.white,
                 },
               ]}
             />

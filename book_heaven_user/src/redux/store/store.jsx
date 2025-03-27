@@ -6,6 +6,8 @@ import authReducer from '../slices/authSlice';
 import userReducer from '../slices/userSlice';
 import bookReducer from '../slices/bookSlice';
 import favoriteReducer from '../slices/favoriteSlice';
+import libraryReducer from '../slices/librarySlice';
+import orderReducer from '../slices/orderSlice';
 
 const persistConfig = {
   key: 'root',
@@ -18,6 +20,8 @@ const rootReducer = combineReducers({
   user: userReducer,
   book: bookReducer,
   favorite: favoriteReducer,
+  library: libraryReducer,
+  order: orderReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

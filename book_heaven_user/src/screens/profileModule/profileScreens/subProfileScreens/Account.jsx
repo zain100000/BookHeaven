@@ -3,7 +3,6 @@ import {
   StyleSheet,
   View,
   Dimensions,
-  useColorScheme,
   StatusBar,
   SafeAreaView,
   ScrollView,
@@ -36,7 +35,6 @@ const Account = () => {
   const dispatch = useDispatch();
   const route = useRoute();
   const navigation = useNavigation();
-  const colorScheme = useColorScheme();
   const user = route.params.user;
 
   const [photoURL, setPhotoURL] = useState('');
@@ -58,13 +56,9 @@ const Account = () => {
   const [phoneError, setPhoneError] = useState('');
 
   useEffect(() => {
-    const statusBarColor =
-      colorScheme === 'dark' ? theme.colors.dark : theme.colors.primary;
+    const statusBarColor = theme.colors.primary;
     StatusBar.setBackgroundColor(statusBarColor);
-    StatusBar.setBarStyle(
-      colorScheme === 'dark' ? 'light-content' : 'dark-content',
-    );
-  }, [colorScheme]);
+  }, []);
 
   useEffect(() => {
     Animated.parallel([
@@ -196,8 +190,7 @@ const Account = () => {
         globalStyles.container,
         styles.primaryContainer,
         {
-          backgroundColor:
-            colorScheme === 'dark' ? theme.colors.dark : theme.colors.white,
+          backgroundColor: theme.colors.white,
         },
       ]}>
       <View style={styles.headerContainer}>
@@ -241,10 +234,7 @@ const Account = () => {
                 globalStyles.inputLabel,
                 styles.label,
                 {
-                  color:
-                    colorScheme === 'dark'
-                      ? theme.colors.white
-                      : theme.colors.primary,
+                  color: theme.colors.primary,
                 },
               ]}>
               Name
@@ -282,10 +272,7 @@ const Account = () => {
                 globalStyles.inputLabel,
                 styles.label,
                 {
-                  color:
-                    colorScheme === 'dark'
-                      ? theme.colors.white
-                      : theme.colors.primary,
+                  color: theme.colors.primary,
                 },
               ]}>
               Phone
@@ -338,6 +325,8 @@ const Account = () => {
               disabled={!isUpdateEnabled()}
               width={width * 0.96}
               onPress={handleUpdate}
+              backgroundColor={theme.colors.primary}
+              textColor={theme.colors.white}
             />
           </Animated.View>
         </Animated.View>

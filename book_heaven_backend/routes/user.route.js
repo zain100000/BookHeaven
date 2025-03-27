@@ -18,7 +18,7 @@ router.post("/signin-user", userController.loginUser);
 router.get("/get-user-by-id/:id", protect, userController.getUserById);
 
 // Route to fetch the books in library (requires authentication)
-router.get("/get-books-library", protect, userController.getLibrary);
+router.get("/get-library-books", protect, userController.getLibrary);
 
 // Route to reset a user's password (requires authentication)
 router.patch("/reset-user-password", protect, userController.resetUserPassword);

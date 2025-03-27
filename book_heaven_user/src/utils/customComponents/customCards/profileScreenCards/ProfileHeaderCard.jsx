@@ -41,7 +41,13 @@ const ProfileHeaderCard = ({
             <Text style={styles.phone}>{phone}</Text>
           </View>
           <View style={styles.btnContainer}>
-            <Button title={btnTitle} onPress={onPress} loading={loading} />
+            <Button
+              title={btnTitle}
+              onPress={onPress}
+              loading={loading}
+              backgroundColor={theme.colors.primary}
+              textColor={theme.colors.white}
+            />
           </View>
         </View>
       </LinearGradient>

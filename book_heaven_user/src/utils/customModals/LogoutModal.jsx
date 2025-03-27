@@ -16,6 +16,7 @@ import CustomModal from './CustomModal';
 import {theme} from '../../styles/theme';
 import {logoutUser} from '../../redux/slices/authSlice';
 import {useDispatch} from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const {width, height} = Dimensions.get('screen');
 
@@ -36,6 +37,8 @@ const LogoutModal = ({visible, title, description, onClose}) => {
       const resultAction = await dispatch(logoutUser()).unwrap();
 
       if (resultAction.success) {
+        await AsyncStorage.removeItem('authToken');
+
         setTimeout(() => {
           setShowAuthModal(false);
           setShowSuccessModal(true);

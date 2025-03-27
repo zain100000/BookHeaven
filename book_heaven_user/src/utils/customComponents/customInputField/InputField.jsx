@@ -1,11 +1,5 @@
 import React, {useState} from 'react';
-import {
-  TextInput,
-  View,
-  StyleSheet,
-  Dimensions,
-  useColorScheme,
-} from 'react-native';
+import {TextInput, View, StyleSheet, Dimensions} from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import {globalStyles} from '../../../styles/globalStyles';
 import {theme} from '../../../styles/theme';
@@ -26,7 +20,6 @@ const InputField = ({
   keyboardType,
   multiline,
 }) => {
-  const colorScheme = useColorScheme();
   const [open, setOpen] = useState(false);
 
   return (
@@ -48,14 +41,8 @@ const InputField = ({
           }}
           dropDownContainerStyle={[
             {
-              backgroundColor:
-                colorScheme === 'dark'
-                  ? theme.colors.white
-                  : theme.colors.white,
-              borderColor:
-                colorScheme === 'dark'
-                  ? theme.colors.white
-                  : theme.colors.primary,
+              backgroundColor: theme.colors.white,
+              borderColor: theme.colors.primary,
             },
             inputStyle,
           ]}
@@ -63,10 +50,7 @@ const InputField = ({
             {
               borderWidth: 2.5,
               borderColor: theme.colors.primary,
-              backgroundColor:
-                colorScheme === 'dark'
-                  ? theme.colors.white
-                  : theme.colors.white,
+              backgroundColor: theme.colors.white,
             },
             inputStyle,
           ]}
@@ -75,10 +59,7 @@ const InputField = ({
               marginHorizontal: width * 0.06,
               fontSize: width * 0.04,
               fontFamily: theme.typography.fontFamilyRegular,
-              color:
-                colorScheme === 'dark'
-                  ? theme.colors.primary
-                  : theme.colors.primary,
+              color: theme.colors.primary,
             },
           ]}
           zIndex={5}
@@ -88,20 +69,12 @@ const InputField = ({
           value={value}
           onChangeText={onChangeText}
           placeholder={placeholder}
-          placeholderTextColor={
-            colorScheme === 'dark' ? theme.colors.primary : theme.colors.primary
-          }
+          placeholderTextColor={theme.colors.primary}
           style={[
             globalStyles.input,
             {
-              backgroundColor:
-                colorScheme === 'dark'
-                  ? theme.colors.white
-                  : theme.colors.white,
-              color:
-                colorScheme === 'dark'
-                  ? theme.colors.primary
-                  : theme.colors.primary,
+              backgroundColor: theme.colors.white,
+              color: theme.colors.primary,
             },
             multiline && {height: 100},
             inputStyle,

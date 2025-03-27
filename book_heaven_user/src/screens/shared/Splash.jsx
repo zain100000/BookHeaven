@@ -4,7 +4,6 @@ import {
   StyleSheet,
   SafeAreaView,
   Dimensions,
-  useColorScheme,
   StatusBar,
 } from 'react-native';
 import * as Animatable from 'react-native-animatable';
@@ -17,17 +16,12 @@ const {width, height} = Dimensions.get('screen');
 
 const Splash = () => {
   const navigation = useNavigation();
-  const colorScheme = useColorScheme();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const statusBarColor =
-      colorScheme === 'dark' ? theme.colors.dark : theme.colors.primary;
+    const statusBarColor = theme.colors.primary;
     StatusBar.setBackgroundColor(statusBarColor);
-    StatusBar.setBarStyle(
-      colorScheme === 'dark' ? 'light-content' : 'dark-content',
-    );
-  }, [colorScheme]);
+  }, []);
 
   useEffect(() => {
     const checkSession = async () => {
@@ -35,7 +29,7 @@ const Splash = () => {
         await new Promise(resolve => setTimeout(resolve, 1500));
 
         const token = await AsyncStorage.getItem('authToken');
-        console.log(token)
+        console.log(token);
 
         if (token) {
           navigation.reset({
@@ -58,15 +52,7 @@ const Splash = () => {
   }, []);
 
   return (
-    <SafeAreaView
-      style={[
-        globalStyles.container,
-        styles.primaryContainer,
-        {
-          backgroundColor:
-            colorScheme === 'dark' ? theme.colors.dark : theme.colors.primary,
-        },
-      ]}>
+    <SafeAreaView style={[globalStyles.container, styles.primaryContainer]}>
       <View style={styles.secondaryContainer}>
         <Animatable.View
           animation="bounceIn"
@@ -82,25 +68,13 @@ const Splash = () => {
         <Animatable.Text
           animation="fadeInUp"
           duration={1500}
-          style={[
-            styles.splashTitle,
-            {
-              color:
-                colorScheme === 'dark' ? theme.colors.white : theme.colors.dark,
-            },
-          ]}>
+          style={[styles.splashTitle]}>
           Book Heaven
         </Animatable.Text>
         <Animatable.Text
           animation="fadeInUp"
           duration={2000}
-          style={[
-            styles.splashDescription,
-            {
-              color:
-                colorScheme === 'dark' ? theme.colors.white : theme.colors.dark,
-            },
-          ]}>
+          style={[styles.splashDescription]}>
           Your Gateway to Infinite Stories
         </Animatable.Text>
       </View>
@@ -115,6 +89,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: theme.colors.primary,
   },
 
   secondaryContainer: {

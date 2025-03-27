@@ -18,6 +18,7 @@ import BottomNavigator from '../navigation/bottomNavigator/BottomNavigator';
 import Account from '../screens/profileModule/profileScreens/subProfileScreens/Account';
 import Address from '../screens/profileModule/profileScreens/subProfileScreens/Address';
 import Favorites from '../screens/profileModule/profileScreens/subProfileScreens/Favorites';
+import Library from '../screens/profileModule/profileScreens/subProfileScreens/Library';
 
 const Stack = createNativeStackNavigator();
 
@@ -73,6 +74,12 @@ const AppNavigator = () => {
         <Stack.Screen name="Favorites">
           {props => (
             <Favorites {...props} setStatusBarColor={setStatusBarColor} />
+          )}
+        </Stack.Screen>
+
+        <Stack.Screen name="My_Library">
+          {props => (
+            <Library {...props} setStatusBarColor={setStatusBarColor} />
           )}
         </Stack.Screen>
       </Stack.Navigator>

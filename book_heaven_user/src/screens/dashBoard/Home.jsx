@@ -3,7 +3,6 @@ import {
   StyleSheet,
   View,
   Dimensions,
-  useColorScheme,
   StatusBar,
   SafeAreaView,
 } from 'react-native';
@@ -15,17 +14,12 @@ import Header from '../../utils/customComponents/customHeader/Header';
 const {width, height} = Dimensions.get('screen');
 
 const Home = () => {
-  const colorScheme = useColorScheme();
   const navigation = useNavigation();
 
   useEffect(() => {
-    const statusBarColor =
-      colorScheme === 'dark' ? theme.colors.dark : theme.colors.primary;
+    const statusBarColor = theme.colors.primary;
     StatusBar.setBackgroundColor(statusBarColor);
-    StatusBar.setBarStyle(
-      colorScheme === 'dark' ? 'light-content' : 'dark-content',
-    );
-  }, [colorScheme]);
+  }, []);
 
   return (
     <SafeAreaView
@@ -33,8 +27,7 @@ const Home = () => {
         globalStyles.container,
         styles.primaryContainer,
         {
-          backgroundColor:
-            colorScheme === 'dark' ? theme.colors.dark : theme.colors.white,
+          backgroundColor: theme.colors.white,
         },
       ]}>
       <View style={styles.headerContainer}>

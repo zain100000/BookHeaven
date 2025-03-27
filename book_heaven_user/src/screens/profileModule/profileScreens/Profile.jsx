@@ -41,13 +41,9 @@ const Profile = () => {
   };
 
   useEffect(() => {
-    const statusBarColor =
-      colorScheme === 'dark' ? theme.colors.dark : theme.colors.primary;
+    const statusBarColor = theme.colors.primary;
     StatusBar.setBackgroundColor(statusBarColor);
-    StatusBar.setBarStyle(
-      colorScheme === 'dark' ? 'light-content' : 'dark-content',
-    );
-  }, [colorScheme]);
+  }, []);
 
   useEffect(() => {
     if (user && user.id) {
@@ -65,8 +61,7 @@ const Profile = () => {
         globalStyles.container,
         styles.primaryContainer,
         {
-          backgroundColor:
-            colorScheme === 'dark' ? theme.colors.dark : theme.colors.white,
+          backgroundColor: theme.colors.white,
         },
       ]}>
       <View style={styles.headerContainer}>

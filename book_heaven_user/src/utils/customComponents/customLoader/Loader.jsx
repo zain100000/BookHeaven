@@ -3,7 +3,6 @@ import {
   View,
   ActivityIndicator,
   StyleSheet,
-  Dimensions,
   useColorScheme,
 } from 'react-native';
 import {theme} from '../../../styles/theme';

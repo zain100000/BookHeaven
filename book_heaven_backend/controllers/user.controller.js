@@ -110,30 +110,26 @@ exports.loginUser = async (req, res) => {
       },
     };
 
-    jwt.sign(
-      payload,
-      process.env.JWT_SECRET,
-      (err, token) => {
-        if (err) {
-          return res.status(500).json({
-            success: false,
-            message: "Error Generating Token!",
-          });
-        }
-
-        // Return success response with the token
-        res.json({
-          success: true,
-          message: "User Login Successfully",
-          data: {
-            id: user.id,
-            fullName: user.fullName,
-            email: user.email,
-          },
-          token,
+    jwt.sign(payload, process.env.JWT_SECRET, (err, token) => {
+      if (err) {
+        return res.status(500).json({
+          success: false,
+          message: "Error Generating Token!",
         });
       }
-    );
+
+      // Return success response with the token
+      res.json({
+        success: true,
+        message: "User Login Successfully",
+        data: {
+          id: user.id,
+          fullName: user.fullName,
+          email: user.email,
+        },
+        token,
+      });
+    });
   } catch (err) {
     // Handle server errors
     console.error("Error:", err);

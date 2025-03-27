@@ -8,7 +8,6 @@ import {
   SafeAreaView,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {useColorScheme} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {globalStyles} from '../../../../styles/globalStyles';
 import {theme} from '../../../../styles/theme';
@@ -24,7 +23,6 @@ const ProfileScreenCard = ({
   textColor,
   onPressFunction,
 }) => {
-  const colorScheme = useColorScheme();
   const navigation = useNavigation();
 
   const handlePress = () => {
@@ -47,11 +45,7 @@ const ProfileScreenCard = ({
                 style={[
                   styles.cardIcon,
                   {
-                    color:
-                      iconColor ||
-                      (colorScheme === 'dark'
-                        ? theme.colors.white
-                        : theme.colors.primary),
+                    color: iconColor,
                   },
                 ]}
               />
@@ -63,11 +57,7 @@ const ProfileScreenCard = ({
               style={[
                 styles.cardTitle,
                 {
-                  color:
-                    textColor ||
-                    (colorScheme === 'dark'
-                      ? theme.colors.white
-                      : theme.colors.dark),
+                  color: textColor,
                 },
               ]}>
               {title || 'Default Title'}

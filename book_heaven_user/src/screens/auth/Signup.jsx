@@ -77,13 +77,9 @@ const Signup = () => {
   }, []);
 
   useEffect(() => {
-    const statusBarColor =
-      colorScheme === 'dark' ? theme.colors.dark : theme.colors.primary;
+    const statusBarColor = theme.colors.primary;
     StatusBar.setBackgroundColor(statusBarColor);
-    StatusBar.setBarStyle(
-      colorScheme === 'dark' ? 'light-content' : 'dark-content',
-    );
-  }, [colorScheme]);
+  }, []);
 
   useEffect(() => {
     const hasErrors =
@@ -182,8 +178,7 @@ const Signup = () => {
         globalStyles.container,
         styles.primaryContainer,
         {
-          backgroundColor:
-            colorScheme === 'dark' ? theme.colors.dark : theme.colors.primary,
+          backgroundColor: theme.colors.primary,
         },
       ]}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -216,10 +211,7 @@ const Signup = () => {
                 globalStyles.inputLabel,
                 styles.label,
                 {
-                  color:
-                    colorScheme === 'dark'
-                      ? theme.colors.white
-                      : theme.colors.white,
+                  color: theme.colors.white,
                 },
               ]}>
               Name
@@ -257,10 +249,7 @@ const Signup = () => {
                 globalStyles.inputLabel,
                 styles.label,
                 {
-                  color:
-                    colorScheme === 'dark'
-                      ? theme.colors.white
-                      : theme.colors.white,
+                  color: theme.colors.white,
                 },
               ]}>
               Email
@@ -298,10 +287,7 @@ const Signup = () => {
                 globalStyles.inputLabel,
                 styles.label,
                 {
-                  color:
-                    colorScheme === 'dark'
-                      ? theme.colors.white
-                      : theme.colors.white,
+                  color: theme.colors.white,
                 },
               ]}>
               Password
@@ -363,6 +349,8 @@ const Signup = () => {
               disabled={!isButtonEnabled}
               onPress={handleSignup}
               width={width * 0.96}
+              backgroundColor={theme.colors.secondary}
+              textColor={theme.colors.white}
             />
           </Animated.View>
 
@@ -386,10 +374,7 @@ const Signup = () => {
               style={[
                 styles.signinText,
                 {
-                  color:
-                    colorScheme === 'dark'
-                      ? theme.colors.white
-                      : theme.colors.white,
+                  color: theme.colors.white,
                 },
               ]}>
               Already have an account?
@@ -399,10 +384,7 @@ const Signup = () => {
                 style={[
                   styles.signinLink,
                   {
-                    color:
-                      colorScheme === 'dark'
-                        ? theme.colors.white
-                        : theme.colors.secondary,
+                    color: theme.colors.secondary,
                   },
                 ]}>
                 Sign In

@@ -4,7 +4,6 @@ import {
   View,
   SafeAreaView,
   StatusBar,
-  useColorScheme,
   FlatList,
   Text,
   Dimensions,
@@ -25,7 +24,6 @@ const {width, height} = Dimensions.get('screen');
 
 const Favorites = () => {
   const dispatch = useDispatch();
-  const colorScheme = useColorScheme();
   const navigation = useNavigation();
 
   const [loading, setLoading] = useState(true);
@@ -35,13 +33,9 @@ const Favorites = () => {
   const {favorites} = useSelector(state => state.favorite);
 
   useEffect(() => {
-    const statusBarColor =
-      colorScheme === 'dark' ? theme.colors.dark : theme.colors.primary;
+    const statusBarColor = theme.colors.primary;
     StatusBar.setBackgroundColor(statusBarColor);
-    StatusBar.setBarStyle(
-      colorScheme === 'dark' ? 'light-content' : 'dark-content',
-    );
-  }, [colorScheme]);
+  }, []);
 
   useEffect(() => {
     setLoading(true);
@@ -62,8 +56,7 @@ const Favorites = () => {
         globalStyles.container,
         styles.primaryContainer,
         {
-          backgroundColor:
-            colorScheme === 'dark' ? theme.colors.dark : theme.colors.white,
+          backgroundColor: theme.colors.white,
         },
       ]}>
       <View style={styles.headerContainer}>

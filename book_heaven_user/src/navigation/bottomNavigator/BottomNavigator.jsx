@@ -36,13 +36,7 @@ const AnimatedTabIcon = ({focused, source}) => {
         style={[
           styles.image,
           {
-            tintColor: focused
-              ? colorScheme === 'dark'
-                ? theme.colors.primary
-                : theme.colors.primary
-              : colorScheme === 'dark'
-              ? theme.colors.gray
-              : theme.colors.gray,
+            tintColor: focused ? theme.colors.primary : theme.colors.gray,
           },
         ]}
       />
@@ -58,15 +52,12 @@ const BottomNavigator = () => {
       initialRouteName="Home"
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor:
-          colorScheme === 'dark' ? theme.colors.primary : theme.colors.primary,
-        tabBarInactiveTintColor:
-          colorScheme === 'dark' ? theme.colors.gray : theme.colors.gray,
+        tabBarActiveTintColor: theme.colors.primary,
+        tabBarInactiveTintColor: theme.colors.gray,
         tabBarStyle: [
           styles.tabBar,
           {
-            backgroundColor:
-              colorScheme === 'dark' ? theme.colors.dark : theme.colors.white,
+            backgroundColor: theme.colors.white,
           },
         ],
         tabBarLabelStyle: styles.tabBarLabel,

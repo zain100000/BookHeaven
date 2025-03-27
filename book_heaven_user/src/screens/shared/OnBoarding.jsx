@@ -57,13 +57,9 @@ const OnBoarding = () => {
   const imageScale = useRef(new Animated.Value(0.8)).current;
 
   useEffect(() => {
-    const statusBarColor =
-      colorScheme === 'dark' ? theme.colors.dark : theme.colors.white;
+    const statusBarColor = theme.colors.white;
     StatusBar.setBackgroundColor(statusBarColor);
-    StatusBar.setBarStyle(
-      colorScheme === 'dark' ? 'light-content' : 'dark-content',
-    );
-  }, [colorScheme]);
+  }, []);
 
   useEffect(() => {
     Animated.parallel([
@@ -107,8 +103,7 @@ const OnBoarding = () => {
         globalStyles.container,
         styles.primaryContainer,
         {
-          backgroundColor:
-            colorScheme === 'dark' ? theme.colors.dark : theme.colors.white,
+          backgroundColor: theme.colors.white,
         },
       ]}>
       <Animated.View
@@ -143,8 +138,7 @@ const OnBoarding = () => {
           style={[
             styles.title,
             {
-              color:
-                colorScheme === 'dark' ? theme.colors.white : theme.colors.dark,
+              color: theme.colors.dark,
             },
             {
               opacity: fadeAnim,
@@ -165,8 +159,7 @@ const OnBoarding = () => {
           style={[
             styles.description,
             {
-              color:
-                colorScheme === 'dark' ? theme.colors.white : theme.colors.dark,
+              color: theme.colors.dark,
             },
             {
               opacity: fadeAnim,
@@ -191,6 +184,8 @@ const OnBoarding = () => {
               title="GET STARTED"
               width={width * 0.9}
               onPress={handleOnComplete}
+              backgroundColor={theme.colors.primary}
+              textColor={theme.colors.white}
             />
           </View>
         ) : (
@@ -200,6 +195,8 @@ const OnBoarding = () => {
                 title="SKIP"
                 width={width * 0.46}
                 onPress={handleOnComplete}
+                backgroundColor={theme.colors.primary}
+                textColor={theme.colors.white}
               />
             </View>
 
@@ -208,6 +205,8 @@ const OnBoarding = () => {
                 title="NEXT"
                 width={width * 0.46}
                 onPress={goToNextSlide}
+                backgroundColor={theme.colors.primary}
+                textColor={theme.colors.white}
               />
             </View>
           </>
