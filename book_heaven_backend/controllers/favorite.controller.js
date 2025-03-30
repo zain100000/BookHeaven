@@ -109,11 +109,8 @@ exports.removeFromFavorite = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Book removed from favorites",
-      favorite: {
-        ...favorite.toObject(),
-        user,
-        book: favorite.bookId,
-      },
+
+      favorites: user.favorites,
     });
   } catch (error) {
     console.error(error);

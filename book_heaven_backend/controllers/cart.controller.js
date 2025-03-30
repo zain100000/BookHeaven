@@ -1,13 +1,19 @@
+const Cart = require("../models/cart.model");
 const User = require("../models/user.model");
 const Book = require("../models/book.model");
 
-// Add a book to the user's cart
+// Add item to cart
 exports.addToCart = async (req, res) => {
   try {
     const { bookId } = req.body;
-    const userId = req.user.id; // Extract user ID from the authenticated request
+    const userId = req.user.id;
 
-    // Find the user by ID
+    if (!bookId) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Book ID is required" });
+    }
+
     const user = await User.findById(userId);
     if (!user) {
       return res
@@ -15,7 +21,6 @@ exports.addToCart = async (req, res) => {
         .json({ success: false, message: "User not found" });
     }
 
-    // Find the book by ID
     const book = await Book.findById(bookId);
     if (!book) {
       return res
@@ -23,39 +28,71 @@ exports.addToCart = async (req, res) => {
         .json({ success: false, message: "Book not found" });
     }
 
-    // Check if the book is already in the user's cart
-    const bookIndex = user.cart.findIndex(
+    let cartItem = await Cart.findOne({ userId, bookId });
+    const userCartExists = user.cart.some(
       (item) => item.bookId.toString() === bookId
     );
 
-    if (bookIndex !== -1) {
-      // If the book is already in the cart, increment its quantity
-      user.cart[bookIndex].quantity += 1;
+    if (cartItem) {
+      cartItem.quantity += 1;
+      cartItem.price = cartItem.quantity * cartItem.unitPrice; // Update total price
+      await cartItem.save();
     } else {
-      // If the book is not in the cart, add it with a quantity of 1
-      user.cart.push({ bookId, quantity: 1, userId });
+      cartItem = new Cart({
+        userId,
+        bookId,
+        quantity: 1,
+        unitPrice: book.price,
+        price: book.price,
+      });
+      await cartItem.save();
     }
 
-    // Save the updated user document
-    await user.save();
+    if (!userCartExists) {
+      user.cart.push({
+        bookId: book._id,
+        userId: user._id,
+        quantity: 1,
+        unitPrice: book.price,
+        price: book.price,
+      });
+      await user.save();
+    } else {
+      const cartIndex = user.cart.findIndex(
+        (item) => item.bookId.toString() === bookId
+      );
+      user.cart[cartIndex].quantity += 1;
+      user.cart[cartIndex].price =
+        user.cart[cartIndex].quantity * user.cart[cartIndex].unitPrice;
+      await user.save();
+    }
 
-    // Return success response with the updated cart
-    res
-      .status(200)
-      .json({ success: true, message: "Book added to cart", cart: user.cart });
+    res.status(200).json({
+      success: true,
+      message: "Book added to cart",
+      cart: {
+        ...cartItem.toObject(),
+        book,
+      },
+    });
   } catch (error) {
-    // Handle server errors
+    console.error(error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
-// Remove a book from the user's cart
+// Remove one item from cart
 exports.removeFromCart = async (req, res) => {
   try {
     const { bookId } = req.body;
-    const userId = req.user.id; // Extract user ID from the authenticated request
+    const userId = req.user.id;
 
-    // Find the user by ID
+    if (!bookId) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Book ID is required" });
+    }
+
     const user = await User.findById(userId);
     if (!user) {
       return res
@@ -63,7 +100,6 @@ exports.removeFromCart = async (req, res) => {
         .json({ success: false, message: "User not found" });
     }
 
-    // Find the book by ID
     const book = await Book.findById(bookId);
     if (!book) {
       return res
@@ -71,38 +107,106 @@ exports.removeFromCart = async (req, res) => {
         .json({ success: false, message: "Book not found" });
     }
 
-    // Find the book in the user's cart
-    const bookIndex = user.cart.findIndex(
-      (item) => item.bookId.toString() === bookId
-    );
-
-    if (bookIndex !== -1) {
-      // If the book is in the cart, decrement its quantity or remove it
-      if (user.cart[bookIndex].quantity > 1) {
-        // If quantity is more than 1, decrement the quantity
-        user.cart[bookIndex].quantity -= 1;
-      } else {
-        // If quantity is 1, remove the book from the cart
-        user.cart.splice(bookIndex, 1);
-      }
-    } else {
-      // If the book is not in the cart, return an error
+    const cartItem = await Cart.findOne({ userId, bookId });
+    if (!cartItem) {
       return res
         .status(400)
-        .json({ success: false, message: "Book not in cart" });
+        .json({ success: false, message: "Book not found in cart" });
     }
 
-    // Save the updated user document
-    await user.save();
+    const userCartIndex = user.cart.findIndex(
+      (item) => item.bookId.toString() === bookId
+    );
+    if (userCartIndex === -1) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Book not in user cart" });
+    }
 
-    // Return success response with the updated cart
+    if (cartItem.quantity > 1 || user.cart[userCartIndex].quantity > 1) {
+      cartItem.quantity -= 1;
+      cartItem.price = cartItem.quantity * cartItem.unitPrice;
+      await cartItem.save();
+
+      user.cart[userCartIndex].quantity -= 1;
+      user.cart[userCartIndex].price =
+        user.cart[userCartIndex].quantity * user.cart[userCartIndex].unitPrice;
+      await user.save();
+    } else {
+      await Cart.findByIdAndDelete(cartItem._id);
+      user.cart.splice(userCartIndex, 1);
+      await user.save();
+    }
+
     res.status(200).json({
       success: true,
       message: "Book removed from cart",
-      cart: user.cart,
+      cart: {
+        ...cartItem.toObject(),
+        book,
+      },
     });
   } catch (error) {
-    // Handle server errors
+    console.error(error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+// Remove all items from cart
+exports.removeAllFromCart = async (req, res) => {
+  try {
+    const { bookId } = req.body;
+    const userId = req.user.id;
+
+    if (!bookId) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Book ID is required" });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    const result = await Cart.deleteMany({ userId, bookId });
+
+    if (result.deletedCount === 0) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Book not found in cart" });
+    }
+
+    user.cart = user.cart.filter((item) => item.bookId.toString() !== bookId);
+    await user.save();
+
+    const cart = await Cart.find({ userId }).populate("bookId");
+
+    res.status(200).json({
+      success: true,
+      message: "All quantities removed from cart",
+      cart,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+// Get all cart items
+exports.getAllCartItems = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const cart = await Cart.find({ userId }).populate("bookId");
+
+    res.status(200).json({
+      success: true,
+      cart,
+    });
+  } catch (error) {
+    console.error(error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };

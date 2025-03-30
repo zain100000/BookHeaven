@@ -10,7 +10,7 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {theme} from '../../styles/theme';
 import Home from '../../screens/dashBoard/Home';
 import Menu from '../../screens/dashBoard/Menu';
-import Cart from '../../screens/dashBoard/Cart';
+import Cart from '../../screens/cart/cartScreens/Cart';
 import Profile from '../../screens/profile/profileScreens/Profile';
 
 const Tab = createBottomTabNavigator();

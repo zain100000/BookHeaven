@@ -8,6 +8,7 @@ import bookReducer from '../slices/bookSlice';
 import favoriteReducer from '../slices/favoriteSlice';
 import libraryReducer from '../slices/librarySlice';
 import orderReducer from '../slices/orderSlice';
+import cartReducer from '../slices/cartSlice';
 
 const persistConfig = {
   key: 'root',
@@ -22,6 +23,7 @@ const rootReducer = combineReducers({
   favorite: favoriteReducer,
   library: libraryReducer,
   order: orderReducer,
+  cart: cartReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

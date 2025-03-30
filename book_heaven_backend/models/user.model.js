@@ -55,6 +55,15 @@ const userSchema = new mongoose.Schema(
           type: Number,
           default: 1,
         },
+        price: {  // This will store the total price (quantity * unit price)
+          type: Number,
+          required: true
+        },
+    
+        unitPrice: {  // This will store the book's original price
+          type: Number,
+          required: true
+        }
       },
     ],
 
