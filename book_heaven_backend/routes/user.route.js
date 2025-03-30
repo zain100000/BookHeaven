@@ -17,6 +17,9 @@ router.post("/signin-user", userController.loginUser);
 // Route to fetch a user by ID (requires authentication)
 router.get("/get-user-by-id/:id", protect, userController.getUserById);
 
+// Route to fetch all users (requires authentication)
+router.get("/get-all-users", protect, userController.getAllUsers);
+
 // Route to fetch the books in library (requires authentication)
 router.get("/get-library-books", protect, userController.getLibrary);
 

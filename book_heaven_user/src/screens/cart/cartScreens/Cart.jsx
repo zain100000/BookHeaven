@@ -26,11 +26,13 @@ import {
 import Loader from '../../../utils/customComponents/customLoader/Loader';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Button from '../../../utils/customComponents/customButton/Button';
+import {useNavigation} from '@react-navigation/native';
 
 const {width, height} = Dimensions.get('screen');
 
 const Cart = () => {
   const dispatch = useDispatch();
+  const navigation = useNavigation();
   const {cartItems, loading} = useSelector(state => state.cart);
   const [removingAll, setRemovingAll] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -100,12 +102,37 @@ const Cart = () => {
     setRefreshing(false);
   };
 
-  const totalAmount = Array.isArray(cartItems)
+  const shippingFee = 50;
+
+  const handleNavigateCheckOut = () => {
+    if (!cartItems.length) return;
+
+    const formattedItems = cartItems.map(item => ({
+      title: item.bookId.title,
+      quantity: item.quantity,
+      unitPrice: item.unitPrice,
+
+    }));
+
+    const userDetails = cartItems[0].userId;
+
+    navigation.navigate('CheckOut', {
+      cartItems: formattedItems,
+      userDetails,
+      totalAmount,
+      shippingFee,
+      totalPayment: totalAmount,
+    });
+  };
+
+  const itemTotal = Array.isArray(cartItems)
     ? cartItems.reduce(
         (sum, item) => sum + (item?.bookId?.price || 0) * item.quantity,
         0,
       )
     : 0;
+
+  const totalAmount = itemTotal + shippingFee;
 
   return (
     <SafeAreaView
@@ -161,22 +188,29 @@ const Cart = () => {
             </View>
             <Text style={styles.emptyText}>Cart Is Empty</Text>
           </Animated.View>
-
-          <View style={styles.fixedBottomContainer}>
-            <View style={styles.amountContainer}>
-              <Text style={styles.totalText}>Total Amount</Text>
-              <Text style={styles.amountText}>${totalAmount.toFixed(2)}</Text>
-            </View>
-            <View style={styles.btnContainer}>
-              <Button
-                title="Checkout"
-                backgroundColor={theme.colors.primary}
-                textColor={theme.colors.white}
-              />
-            </View>
-          </View>
         </ScrollView>
       )}
+      <View style={styles.fixedBottomContainer}>
+        <View style={styles.bottomContainer}>
+          <View style={styles.priceContainer}>
+            <Text style={styles.titleText}>Price</Text>
+            <Text style={styles.amountText}>${itemTotal.toFixed(2)}</Text>
+          </View>
+
+          <View style={styles.shippingFeeContainer}>
+            <Text style={styles.titleText}>Shipping Fee</Text>
+            <Text style={styles.amountText}>${shippingFee.toFixed(2)}</Text>
+          </View>
+        </View>
+        <View style={styles.btnContainer}>
+          <Button
+            title="Checkout"
+            backgroundColor={theme.colors.primary}
+            textColor={theme.colors.white}
+            onPress={handleNavigateCheckOut}
+          />
+        </View>
+      </View>
     </SafeAreaView>
   );
 };
@@ -229,21 +263,35 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
   },
 
-  amountContainer: {
+  priceContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 10,
   },
 
-  totalText: {
-    fontSize: theme.typography.fontSize.lg,
+  shippingFeeContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+
+  totalAmountContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+
+  titleText: {
+    fontSize: theme.typography.fontSize.md,
     fontFamily: theme.typography.fontFamilyBold,
     color: theme.colors.primary,
   },
 
   amountText: {
-    fontSize: theme.typography.fontSize.lg,
+    fontSize: theme.typography.fontSize.md,
     fontFamily: theme.typography.fontFamilyBold,
     color: theme.colors.black,
   },

@@ -21,7 +21,10 @@ import Favorites from '../screens/profile/profileScreens/subProfileScreens/Favor
 import Library from '../screens/profile/profileScreens/subProfileScreens/Library';
 import PrivacyPolicy from '../screens/profile/profileScreens/subProfileScreens/PrivacyPolicy';
 import AppUsage from '../screens/profile/profileScreens/subProfileScreens/AppUsage';
+
+// Order(Cart + CheckOut) Imports
 import Orders from '../screens/profile/profileScreens/subProfileScreens/Orders';
+import CheckOut from '../screens/checkout/CheckOut';
 
 const Stack = createNativeStackNavigator();
 
@@ -87,9 +90,7 @@ const AppNavigator = () => {
         </Stack.Screen>
 
         <Stack.Screen name="My_Orders">
-          {props => (
-            <Orders {...props} setStatusBarColor={setStatusBarColor} />
-          )}
+          {props => <Orders {...props} setStatusBarColor={setStatusBarColor} />}
         </Stack.Screen>
 
         <Stack.Screen name="Privacy_Policy">
@@ -101,6 +102,13 @@ const AppNavigator = () => {
         <Stack.Screen name="Terms_Conditions">
           {props => (
             <AppUsage {...props} setStatusBarColor={setStatusBarColor} />
+          )}
+        </Stack.Screen>
+
+        {/* Order Routes */}
+        <Stack.Screen name="CheckOut">
+          {props => (
+            <CheckOut {...props} setStatusBarColor={setStatusBarColor} />
           )}
         </Stack.Screen>
       </Stack.Navigator>

@@ -170,6 +170,32 @@ exports.getUserById = async (req, res) => {
   }
 };
 
+// Get all users
+exports.getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find().select("-password");
+
+    if (!users.length) {
+      return res.status(404).json({
+        success: false,
+        message: "No User Found!",
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "User Fetched Successfully",
+      patients,
+    });
+  } catch (err) {
+    console.error("Error:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Error Fetching Users!",
+    });
+  }
+};
+
 // Reset user password
 exports.resetUserPassword = async (req, res) => {
   try {

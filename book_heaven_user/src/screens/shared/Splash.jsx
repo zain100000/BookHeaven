@@ -7,10 +7,11 @@ import {
   StatusBar,
 } from 'react-native';
 import * as Animatable from 'react-native-animatable';
-import {useNavigation} from '@react-navigation/native';
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {theme} from '../../styles/theme';
 import {globalStyles} from '../../styles/globalStyles';
+import { useNavigation } from '@react-navigation/native';
 
 const {width, height} = Dimensions.get('screen');
 

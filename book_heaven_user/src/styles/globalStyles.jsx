@@ -122,6 +122,6 @@ export const globalStyles = StyleSheet.create({
   divider: {
     height: verticalScale(1),
     backgroundColor: theme.colors.primary,
-    marginVertical: verticalScale(theme.spacing(2)),
+    marginVertical: verticalScale(theme.spacing(0.9)),
   },
 });

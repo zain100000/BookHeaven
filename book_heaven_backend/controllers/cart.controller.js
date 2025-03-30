@@ -73,6 +73,7 @@ exports.addToCart = async (req, res) => {
       cart: {
         ...cartItem.toObject(),
         book,
+        user,
       },
     });
   } catch (error) {
@@ -144,6 +145,7 @@ exports.removeFromCart = async (req, res) => {
       cart: {
         ...cartItem.toObject(),
         book,
+        user,
       },
     });
   } catch (error) {
@@ -199,7 +201,9 @@ exports.removeAllFromCart = async (req, res) => {
 exports.getAllCartItems = async (req, res) => {
   try {
     const userId = req.user.id;
-    const cart = await Cart.find({ userId }).populate("bookId");
+    const cart = await Cart.find({ userId })
+      .populate("bookId")
+      .populate("userId"); // Populate user details
 
     res.status(200).json({
       success: true,
