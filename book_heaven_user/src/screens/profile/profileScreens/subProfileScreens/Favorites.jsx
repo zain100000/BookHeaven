@@ -7,6 +7,7 @@ import {
   FlatList,
   Text,
   Dimensions,
+  Animated,
 } from 'react-native';
 import {globalStyles} from '../../../../styles/globalStyles';
 import {useNavigation} from '@react-navigation/native';
@@ -19,6 +20,7 @@ import {
   removeFromFavorite,
 } from '../../../../redux/slices/favoriteSlice';
 import Loader from '../../../../utils/customComponents/customLoader/Loader';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const {width, height} = Dimensions.get('screen');
 
@@ -28,6 +30,8 @@ const Favorites = () => {
 
   const [loading, setLoading] = useState(true);
   const [removingId, setRemovingId] = useState(null);
+  const fadeAnim = useState(new Animated.Value(0))[0];
+  const bounceAnim = useState(new Animated.Value(0))[0];
 
   const user = useSelector(state => state.auth.user);
   const {favorites} = useSelector(state => state.favorite);
@@ -41,6 +45,32 @@ const Favorites = () => {
     setLoading(true);
     dispatch(getAllFavorites()).finally(() => setLoading(false));
   }, [dispatch]);
+
+  useEffect(() => {
+    if (!loading && favorites?.length === 0) {
+      Animated.parallel([
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+        Animated.loop(
+          Animated.sequence([
+            Animated.timing(bounceAnim, {
+              toValue: 10,
+              duration: 500,
+              useNativeDriver: true,
+            }),
+            Animated.timing(bounceAnim, {
+              toValue: 0,
+              duration: 500,
+              useNativeDriver: true,
+            }),
+          ]),
+        ),
+      ]).start();
+    }
+  }, [loading, favorites]);
 
   const userFavorites = favorites?.filter(fav => fav.userId._id === user.id);
 
@@ -88,9 +118,21 @@ const Favorites = () => {
           showsVerticalScrollIndicator={false}
         />
       ) : (
-        <View style={styles.emptyContainer}>
+        <Animated.View
+          style={[
+            styles.emptyContainer,
+            {
+              opacity: fadeAnim,
+              transform: [{translateY: bounceAnim}],
+            },
+          ]}>
+          <Ionicons
+            name="heart-outline"
+            size={80}
+            color={theme.colors.primary}
+          />
           <Text style={styles.emptyText}>No Favorites Found</Text>
-        </View>
+        </Animated.View>
       )}
 
       {removingId && (
@@ -131,6 +173,7 @@ const styles = StyleSheet.create({
     fontSize: theme.typography.fontSize.xl,
     fontFamily: theme.typography.fontFamilyBold,
     color: theme.colors.primary,
+    marginTop: height * 0.02,
   },
 
   loaderOverlay: {

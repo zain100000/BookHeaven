@@ -21,6 +21,7 @@ import Favorites from '../screens/profile/profileScreens/subProfileScreens/Favor
 import Library from '../screens/profile/profileScreens/subProfileScreens/Library';
 import PrivacyPolicy from '../screens/profile/profileScreens/subProfileScreens/PrivacyPolicy';
 import AppUsage from '../screens/profile/profileScreens/subProfileScreens/AppUsage';
+import Orders from '../screens/profile/profileScreens/subProfileScreens/Orders';
 
 const Stack = createNativeStackNavigator();
 
@@ -82,6 +83,12 @@ const AppNavigator = () => {
         <Stack.Screen name="My_Library">
           {props => (
             <Library {...props} setStatusBarColor={setStatusBarColor} />
+          )}
+        </Stack.Screen>
+
+        <Stack.Screen name="My_Orders">
+          {props => (
+            <Orders {...props} setStatusBarColor={setStatusBarColor} />
           )}
         </Stack.Screen>
 

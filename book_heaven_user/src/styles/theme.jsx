@@ -4,6 +4,7 @@ export const theme = {
     secondary: '#352368',
     white: '#FFFFFF',
     dark: '#000000',
+    success: '#008000',
     warning: '#FBAE05',
     error: '#ff0000',
     gray: '#999999',

@@ -8,21 +8,22 @@ import {
   Text,
   Dimensions,
   Animated,
+  SectionList,
 } from 'react-native';
 import {globalStyles} from '../../../../styles/globalStyles';
 import {useNavigation} from '@react-navigation/native';
 import Header from '../../../../utils/customComponents/customHeader/Header';
 import {theme} from '../../../../styles/theme';
 import {useDispatch, useSelector} from 'react-redux';
-import {getLibraryBooks} from '../../../../redux/slices/librarySlice';
+import {getAllOrders} from '../../../../redux/slices/orderSlice';
 import Loader from '../../../../utils/customComponents/customLoader/Loader';
-import LibraryCard from '../../../../utils/customComponents/customCards/libraryCard/LibraryCard';
+import OrderCard from '../../../../utils/customComponents/customCards/orderCard/OrderCard';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import InputField from '../../../../utils/customComponents/customInputField/InputField';
 
 const {width, height} = Dimensions.get('screen');
 
-const Library = () => {
+const Orders = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
 
@@ -31,7 +32,8 @@ const Library = () => {
   const fadeAnim = useState(new Animated.Value(0))[0];
   const bounceAnim = useState(new Animated.Value(0))[0];
 
-  const {library} = useSelector(state => state.library);
+  const user = useSelector(state => state.auth.user);
+  const {orders} = useSelector(state => state.order);
 
   useEffect(() => {
     const statusBarColor = theme.colors.primary;
@@ -40,18 +42,74 @@ const Library = () => {
 
   useEffect(() => {
     setLoading(true);
-    dispatch(getLibraryBooks()).finally(() => setLoading(false));
+    dispatch(getAllOrders()).finally(() => setLoading(false));
   }, [dispatch]);
 
-  const filteredBooks = library?.filter(item => {
-    const title = item.bookId?.title?.toLowerCase() || '';
-    const author = item.bookId?.author?.toLowerCase() || '';
+  const userOrders =
+    orders?.filter(order => order.orderId?.userId?._id === user.id) || [];
+
+  const filteredOrders = userOrders.filter(order => {
+    const orderData = order.orderId || order;
+    const itemTitle = orderData.items[0]?.bookId?.title?.toLowerCase() || '';
+    const status = orderData.status?.toLowerCase() || '';
     const query = searchQuery.toLowerCase();
-    return title.includes(query) || author.includes(query);
+    return itemTitle.includes(query) || status.includes(query);
   });
 
+  const groupOrdersByDate = () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    const sections = [
+      {title: 'Today', data: []},
+      {title: 'Yesterday', data: []},
+      {title: 'Older', data: []},
+    ];
+
+    // Sort orders by date (newest first)
+    const sortedOrders = [...filteredOrders].sort((a, b) => {
+      const dateA = new Date(a.orderId?.placedAt || a.placedAt || a.createdAt);
+      const dateB = new Date(b.orderId?.placedAt || b.placedAt || b.createdAt);
+      return dateB - dateA; // Descending order (newest first)
+    });
+
+    sortedOrders.forEach(order => {
+      const orderData = order.orderId || order;
+      const orderDate = new Date(orderData.placedAt || orderData.createdAt);
+      const formattedDate = orderDate.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      });
+      orderDate.setHours(0, 0, 0, 0);
+
+      if (orderDate.getTime() === today.getTime()) {
+        sections[0].data.push({...order, formattedDate});
+      } else if (orderDate.getTime() === yesterday.getTime()) {
+        sections[1].data.push({...order, formattedDate});
+      } else {
+        sections[2].data.push({...order, formattedDate});
+      }
+    });
+
+    return sections.filter(section => section.data.length > 0);
+  };
+
+  const renderSectionHeader = ({section}) => (
+    <View style={styles.sectionHeader}>
+      <Text style={styles.sectionHeaderText}>
+        {section.title} - {section.data[0]?.formattedDate}
+      </Text>
+    </View>
+  );
+
+  const dateSections = groupOrdersByDate();
+
   useEffect(() => {
-    if (!loading && filteredBooks?.length === 0) {
+    if (!loading && filteredOrders.length === 0) {
       Animated.parallel([
         Animated.timing(fadeAnim, {
           toValue: 1,
@@ -77,7 +135,19 @@ const Library = () => {
       fadeAnim.setValue(0);
       bounceAnim.setValue(0);
     }
-  }, [loading, filteredBooks]);
+  }, [loading, filteredOrders]);
+
+  const renderItem = ({item}) => {
+    const order = item.orderId || item;
+    return (
+      <OrderCard
+        bookImage={order.items[0]?.bookId?.bookImage}
+        title={order.items[0]?.bookId?.title}
+        orderStatus={order.status}
+        itemsCount={order.items.length}
+      />
+    );
+  };
 
   return (
     <SafeAreaView
@@ -90,7 +160,7 @@ const Library = () => {
       ]}>
       <View style={styles.headerContainer}>
         <Header
-          title="My Library"
+          title="My Orders"
           leftIcon={require('../../../../assets/icons/arrow-left.png')}
           onPressLeft={() => navigation.goBack()}
         />
@@ -102,10 +172,11 @@ const Library = () => {
             name="search"
             size={width * 0.05}
             color={theme.colors.primary}
+            style={styles.searchIcon}
           />
         </View>
         <InputField
-          placeholder="Search by Title or Author"
+          placeholder="Search by Title or Status"
           placeholderTextColor={theme.colors.gray}
           backgroundColor={theme.colors.lightGray}
           value={searchQuery}
@@ -114,23 +185,18 @@ const Library = () => {
         />
       </View>
 
-      <View style={styles.booksContainer}>
+      <View style={styles.ordersContainer}>
         {loading ? (
           <View style={styles.loaderContainer}>
             <Loader />
           </View>
-        ) : filteredBooks?.length > 0 ? (
-          <FlatList
-            data={filteredBooks}
+        ) : dateSections.length > 0 ? (
+          <SectionList
+            sections={dateSections}
             keyExtractor={item => item._id.toString()}
-            renderItem={({item}) => (
-              <LibraryCard
-                bookImage={item.bookId.bookImage}
-                title={item.bookId.title}
-                author={item.bookId.author}
-                bookFile={item.bookFile}
-              />
-            )}
+            renderItem={renderItem}
+            renderSectionHeader={renderSectionHeader}
+            stickySectionHeadersEnabled={false}
           />
         ) : (
           <Animated.View
@@ -142,12 +208,12 @@ const Library = () => {
               },
             ]}>
             <Ionicons
-              name="book-outline"
+              name="cart-outline"
               size={80}
               color={theme.colors.primary}
             />
             <Text style={styles.emptyText}>
-              {searchQuery ? 'No Books found' : 'Library Is Empty!'}
+              {searchQuery ? 'No orders found' : 'No Orders Found!'}
             </Text>
           </Animated.View>
         )}
@@ -156,16 +222,15 @@ const Library = () => {
   );
 };
 
-export default Library;
+export default Orders;
 
 const styles = StyleSheet.create({
   primaryContainer: {
     flex: 1,
   },
 
-  booksContainer: {
+  ordersContainer: {
     flex: 1,
-    justifyContent: 'center',
     paddingHorizontal: width * 0.04,
   },
 
@@ -196,6 +261,19 @@ const styles = StyleSheet.create({
     fontSize: theme.typography.fontSize.xl,
     fontFamily: theme.typography.fontFamilyBold,
     color: theme.colors.primary,
+  },
+
+  sectionHeader: {
+    backgroundColor: theme.colors.secondary,
+    paddingVertical: height * 0.01,
+    paddingHorizontal: width * 0.02,
     marginTop: height * 0.02,
+    borderRadius: theme.borderRadius.medium,
+  },
+
+  sectionHeaderText: {
+    fontSize: theme.typography.fontSize.md,
+    fontFamily: theme.typography.fontFamilyBold,
+    color: theme.colors.white,
   },
 });
