@@ -15,10 +15,12 @@ import Signup from '../screens/auth/Signup';
 import BottomNavigator from '../navigation/bottomNavigator/BottomNavigator';
 
 // Profile Imports
-import Account from '../screens/profileModule/profileScreens/subProfileScreens/Account';
-import Address from '../screens/profileModule/profileScreens/subProfileScreens/Address';
-import Favorites from '../screens/profileModule/profileScreens/subProfileScreens/Favorites';
-import Library from '../screens/profileModule/profileScreens/subProfileScreens/Library';
+import Account from '../screens/profile/profileScreens/subProfileScreens/Account';
+import Address from '../screens/profile/profileScreens/subProfileScreens/Address';
+import Favorites from '../screens/profile/profileScreens/subProfileScreens/Favorites';
+import Library from '../screens/profile/profileScreens/subProfileScreens/Library';
+import PrivacyPolicy from '../screens/profile/profileScreens/subProfileScreens/PrivacyPolicy';
+import AppUsage from '../screens/profile/profileScreens/subProfileScreens/AppUsage';
 
 const Stack = createNativeStackNavigator();
 
@@ -80,6 +82,18 @@ const AppNavigator = () => {
         <Stack.Screen name="My_Library">
           {props => (
             <Library {...props} setStatusBarColor={setStatusBarColor} />
+          )}
+        </Stack.Screen>
+
+        <Stack.Screen name="Privacy_Policy">
+          {props => (
+            <PrivacyPolicy {...props} setStatusBarColor={setStatusBarColor} />
+          )}
+        </Stack.Screen>
+
+        <Stack.Screen name="Terms_Conditions">
+          {props => (
+            <AppUsage {...props} setStatusBarColor={setStatusBarColor} />
           )}
         </Stack.Screen>
       </Stack.Navigator>

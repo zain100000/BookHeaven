@@ -303,6 +303,43 @@ const Account = () => {
             />
           </View>
 
+          {/* Email Field */}
+          <View style={styles.emailContainer}>
+            <Text
+              style={[
+                globalStyles.inputLabel,
+                styles.label,
+                {
+                  color: theme.colors.primary,
+                },
+              ]}>
+              Email
+            </Text>
+            <Animated.View
+              style={[
+                styles.iconContainer,
+                {
+                  opacity: fadeAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, 1],
+                  }),
+                },
+              ]}>
+              <Ionicons
+                name="mail"
+                size={width * 0.05}
+                color={theme.colors.primary}
+              />
+            </Animated.View>
+
+            <InputField
+              value={user?.email}
+              placeholderTextColor={theme.colors.primary}
+              backgroundColor={theme.colors.dark}
+              editable={false}
+            />
+          </View>
+
           {/* Button */}
           <Animated.View
             style={[
@@ -383,7 +420,6 @@ const styles = StyleSheet.create({
   },
 
   formContainer: {
-    marginTop: height * 0.02,
     paddingHorizontal: width * 0.024,
   },
 

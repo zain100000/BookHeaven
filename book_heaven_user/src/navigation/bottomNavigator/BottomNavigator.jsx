@@ -11,7 +11,7 @@ import {theme} from '../../styles/theme';
 import Home from '../../screens/dashBoard/Home';
 import Menu from '../../screens/dashBoard/Menu';
 import Cart from '../../screens/dashBoard/Cart';
-import Profile from '../../screens/profileModule/profileScreens/Profile';
+import Profile from '../../screens/profile/profileScreens/Profile';
 
 const Tab = createBottomTabNavigator();
 const {width, height} = Dimensions.get('screen');
