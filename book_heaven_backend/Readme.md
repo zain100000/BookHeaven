@@ -1,8 +1,8 @@
-# MediLink Backend
+# Book Heaven Backend
 
 ## Description
 
-The **MediLink Backend** is a Node.js-based RESTful API designed to support a full-featured doctor appointment and healthcare management platform. This backend provides endpoints for managing users, doctors, appointments, specialties, reviews, and schedules. It includes robust user authentication and role-based access control (RBAC), allowing admins and superadmins to manage the platform effectively.
+The **Book Heaven** Backend is a Node.js and Express-based RESTful API designed to power a comprehensive online book store platform. This backend provides endpoints for managing users, books, orders, inventory, and reviews. It features secure user authentication, role-based access control (RBAC), and integrates with MongoDB for data storage, JWT for security, and Cloudinary for handling document and image uploads.
 
 ---
 
@@ -11,27 +11,51 @@ The **MediLink Backend** is a Node.js-based RESTful API designed to support a fu
 - **User Management**:
 
   - User registration, login, and authentication.
-  - Role-based access control: `patient`, `doctor`, and `superadmin`.
-  - Profile management for patients and doctors.
+  - Role-based access control: `user` and `superadmin`.
+  - Profile management for users and superadmins.
 
-- **Doctor Management:**:
+- **Book Management:**:
 
-  - Add, update, delete, and view doctor profiles.
-  - Associate doctors with specialties and availability schedules.
-  - Average ratings calculated from patient reviews.
-  - Categorize doctors by medical specialties (e.g., Cardiology, Dermatology, Neurology).
+  - Add, update, delete, and view book listings.
+  - Categorize books by genres, authors, and publishers.
+  - Upload book covers and related documents using Cloudinary.
+  - Track inventory and stock levels.
 
-- **Appointments:**:
+- **Order Management:**:
 
-  - Patients can book, reschedule, or cancel appointments.
-  - Doctors can manage their appointment schedules.
+  - Customers can place, track, and manage their orders.
+  - Admins can process orders, update statuses, and manage transactions.
+  - Integration with payment gateways (not funtional for now).
 
 - **Reviews & Ratings:**:
 
-  - Patients can leave ratings and comments for doctors.
+  - Customers can leave ratings and reviews for books.
+  - Aggregate ratings displayed on book listings.
 
-- **Role Based Accessed Control(RBAC):**:
+- **Super Admin Panel:**:
 
-  - Only superadmins will be able to manage.
+  - Manage all users, books, and transactions.
+  - Oversee inventory and stock levels.
+
+- **Customer(User) Panel:**:
+
+  - Browse and search books by title and authors.
+  - Purchase books and track order history.
+  - Purchased books will be added to the user Library and also can be    delivered based on user preference.
+  - Leave reviews and ratings for purchased books.
+
 
 ---
+
+
+## Technologies Used
+
+**Backend**: Node.js, Express
+
+**Database**: MongoDB
+
+**Authentication**: JWT (JSON Web Tokens)
+
+**File Storage**: Cloudinary (for images and documents)
+
+**Security**: Role-Based Access Control (RBAC), input validation, and sanitization
