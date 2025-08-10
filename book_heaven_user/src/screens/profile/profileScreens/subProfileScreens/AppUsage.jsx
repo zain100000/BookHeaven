@@ -9,6 +9,7 @@ import {
   ScrollView,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import {theme} from '../../../../styles/theme';
 import Header from '../../../../utils/customComponents/customHeader/Header';
 import {globalStyles} from '../../../../styles/globalStyles';
@@ -32,9 +33,17 @@ const AppUsage = () => {
       ]}>
       <View style={styles.headerContainer}>
         <Header
-          title="Terms and Conditions"
-          leftIcon={require('../../../../assets/icons/arrow-left.png')}
-        />
+            logo={require('../../../../assets/splashScreen/splash-logo.png')}
+            title="Terms and Conditions"
+            leftIcon={
+              <FontAwesome5
+                name="chevron-left"
+                size={width * 0.06}
+                color={theme.colors.white}
+              />
+            }
+            onPressLeft={() => navigation.goBack()}
+          />
       </View>
 
       <View style={styles.headerTextContainer}>

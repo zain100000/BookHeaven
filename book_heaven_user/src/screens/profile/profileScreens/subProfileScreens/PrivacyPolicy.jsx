@@ -9,6 +9,7 @@ import {
   ScrollView,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import {useNavigation} from '@react-navigation/native';
 import {theme} from '../../../../styles/theme';
 import Header from '../../../../utils/customComponents/customHeader/Header';
@@ -35,9 +36,16 @@ const PrivacyPolicy = () => {
       ]}>
       <View style={styles.headerContainer}>
         <Header
+          logo={require('../../../../assets/splashScreen/splash-logo.png')}
           title="Privacy Policy"
-          leftIcon={require('../../../../assets/icons/arrow-left.png')}
-          onPressLeft={()=>navigation.goBack('')}
+          leftIcon={
+            <FontAwesome5
+              name="chevron-left"
+              size={width * 0.06}
+              color={theme.colors.white}
+            />
+          }
+          onPressLeft={() => navigation.goBack()}
         />
       </View>
 

@@ -15,6 +15,42 @@ const getToken = async rejectWithValue => {
   }
 };
 
+export const placeOrder = createAsyncThunk(
+  'order/placeOrder',
+  async (orderData, {rejectWithValue}) => {
+    try {
+      const token = await getToken(rejectWithValue);
+
+      // Ensure we're using the correct field names that match the backend
+      const backendPayload = {
+        shippingAddress: orderData.shippingAddress,
+        shippingFee: orderData.shippingFee.toString(),
+        paymentMethod: orderData.paymentMethod,
+        totalAmount: orderData.totalAmount,
+        items: orderData.items.map(item => ({
+          bookId: item.productId, // Changed from productId to bookId to match backend
+          quantity: item.quantity,
+        })),
+      };
+
+      const response = await axios.post(
+        `${BASE_URL}/order/place-order`,
+        backendPayload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  },
+);
+
 export const getAllOrders = createAsyncThunk(
   'order/getAllOrders',
   async (_, thunkAPI) => {
@@ -61,6 +97,18 @@ const orderSlice = createSlice({
   reducers: {},
   extraReducers: builder => {
     builder
+      .addCase(placeOrder.pending, state => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(placeOrder.fulfilled, (state, action) => {
+        state.loading = false;
+        state.orders.push(action.payload);
+      })
+      .addCase(placeOrder.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
       .addCase(getAllOrders.pending, state => {
         state.loading = true;
         state.error = null;

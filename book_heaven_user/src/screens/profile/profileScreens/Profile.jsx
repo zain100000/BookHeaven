@@ -1,30 +1,32 @@
-import React, {useState, useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   StyleSheet,
+  StatusBar,
   View,
   Dimensions,
-  useColorScheme,
-  StatusBar,
-  SafeAreaView,
   ScrollView,
+  Text,
 } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import {theme} from '../../../styles/theme';
-import {globalStyles} from '../../../styles/globalStyles';
-import {useNavigation} from '@react-navigation/native';
 import Header from '../../../utils/customComponents/customHeader/Header';
+import {useNavigation} from '@react-navigation/native';
+import {useDispatch, useSelector} from 'react-redux';
+import {deleteAccount, getUser} from '../../../redux/slices/userSlice';
 import ProfileHeaderCard from '../../../utils/customComponents/customCards/profileScreenCards/ProfileHeaderCard';
-import {getUser} from '../../../redux/slices/userSlice';
-import {useSelector, useDispatch} from 'react-redux';
 import ProfileScreenCard from '../../../utils/customComponents/customCards/profileScreenCards/ProfileCard';
 import LogoutModal from '../../../utils/customModals/LogoutModal';
+import DeleteAccountModal from '../../../utils/customModals/DeleteAccountModal';
+import Toast from 'react-native-toast-message';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 const {width, height} = Dimensions.get('screen');
 
 const Profile = () => {
   const dispatch = useDispatch();
-  const colorScheme = useColorScheme();
   const navigation = useNavigation();
 
+  const loading = useSelector(state => state.user.loading);
   const user = useSelector(state => state.auth.user);
   const userProfile = useSelector(state => state.user.user);
   const profilePicture = useSelector(state => state.user.user?.profilePicture);
@@ -32,18 +34,18 @@ const Profile = () => {
   const phone = useSelector(state => state.user.user?.phone);
 
   const [showLogoutModal, setShowLogoutModal] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  useEffect(() => {
+    const statusBarColor = theme.colors.primary;
+    StatusBar.setBackgroundColor(statusBarColor);
+  }, []);
 
   const handleProfileNavigate = () => {
     navigation.navigate('My_Account', {
       user: userProfile,
     });
   };
-
-  useEffect(() => {
-    const statusBarColor = theme.colors.primary;
-    StatusBar.setBackgroundColor(statusBarColor);
-  }, []);
 
   useEffect(() => {
     if (user && user.id) {
@@ -55,26 +57,78 @@ const Profile = () => {
     setShowLogoutModal(true);
   };
 
+  const handleDeleteAccountModal = () => {
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteAccount = async () => {
+    try {
+      console.log('[handleDeleteAccount] Initiating deletion');
+
+      const result = await dispatch(deleteAccount(user.id)).unwrap();
+      console.log('[handleDeleteAccount] Deletion result:', result);
+
+      setShowDeleteModal(false);
+
+      setTimeout(() => {
+        Toast.show({
+          type: 'success',
+          text1: 'Account Deleted',
+          text2: result.message || 'Your account has been removed',
+        });
+        navigation.reset({
+          index: 0,
+          routes: [{name: 'Signin'}],
+        });
+      }, 500);
+    } catch (error) {
+      console.error('[handleDeleteAccount] Error:', error);
+      Toast.show({
+        type: 'error',
+        text1: 'Deletion Failed',
+        text2: error.includes('Network Error')
+          ? 'Network connection failed'
+          : error || 'Could not delete account',
+      });
+    }
+  };
+
+  const handleChatNavigate = () => {
+    console.log('Navigating to Chat with userId:', user?.id);
+    navigation.navigate('Chat', {
+      userId: user?.id,
+    });
+  };
+
   return (
-    <SafeAreaView
-      style={[
-        globalStyles.container,
-        styles.primaryContainer,
-        {
-          backgroundColor: theme.colors.white,
-        },
-      ]}>
+    <LinearGradient
+      colors={[theme.colors.primary, theme.colors.secondary]}
+      style={styles.container}>
       <View style={styles.headerContainer}>
         <Header
-          title="Profile"
-          leftIcon={require('../../../assets/icons/arrow-left.png')}
-          rightIcon={require('../../../assets/icons/bell.png')}
+          logo={require('../../../assets/splashScreen/splash-logo.png')}
+          title="My Profile"
+          leftIcon={
+            <FontAwesome5
+              name="chevron-left"
+              size={width * 0.06}
+              color={theme.colors.white}
+            />
+          }
+          onPressLeft={() => navigation.goBack()}
         />
       </View>
 
       <ScrollView
-        contentContainerStyle={styles.scrollViewContainer}
-        showsVerticalScrollIndicator={false}>
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}>
+        <View style={styles.sectionHeaderContainer}>
+          <Text style={styles.headerTitle}>Profile</Text>
+          <Text style={styles.headerDescription}>
+            You can access your profile from here!
+          </Text>
+        </View>
+
         <View style={styles.profileInfoContainer}>
           <ProfileHeaderCard
             image={profilePicture}
@@ -82,7 +136,6 @@ const Profile = () => {
             phone={phone}
             btnTitle="Logout"
             onPress={handleLogoutModal}
-            loading={loading}
           />
         </View>
 
@@ -94,26 +147,6 @@ const Profile = () => {
               iconColor={theme.colors.primary}
               rightIcon="chevron-forward"
               onPressFunction={handleProfileNavigate}
-            />
-          </View>
-
-          <View style={styles.addressContainer}>
-            <ProfileScreenCard
-              title="Address"
-              iconName="location"
-              iconColor={theme.colors.primary}
-              rightIcon="chevron-forward"
-              onPressFunction={() => navigation.navigate('Address')}
-            />
-          </View>
-
-          <View style={styles.libraryContainer}>
-            <ProfileScreenCard
-              title="My Library"
-              iconName="book"
-              iconColor={theme.colors.primary}
-              rightIcon="chevron-forward"
-              onPressFunction={() => navigation.navigate('My_Library')}
             />
           </View>
 
@@ -133,17 +166,7 @@ const Profile = () => {
               iconName="briefcase"
               iconColor={theme.colors.primary}
               rightIcon="chevron-forward"
-              onPressFunction={() => navigation.navigate('Terms_Conditions')}
-            />
-          </View>
-
-          <View style={styles.favoriteContainer}>
-            <ProfileScreenCard
-              title="Favorites"
-              iconName="heart"
-              iconColor={theme.colors.primary}
-              rightIcon="chevron-forward"
-              onPressFunction={() => navigation.navigate('Favorites')}
+              onPressFunction={() => navigation.navigate('App_Usage')}
             />
           </View>
 
@@ -163,7 +186,7 @@ const Profile = () => {
               iconName="headset"
               iconColor={theme.colors.primary}
               rightIcon="chevron-forward"
-              onPressFunction={() => navigation.navigate('Customer_Care')}
+              onPressFunction={handleChatNavigate}
             />
           </View>
 
@@ -173,6 +196,7 @@ const Profile = () => {
               iconName="trash"
               iconColor={theme.colors.error}
               rightIcon="chevron-forward"
+              onPressFunction={handleDeleteAccountModal}
             />
           </View>
         </View>
@@ -184,15 +208,50 @@ const Profile = () => {
         title="Logout!"
         description="Are Your Sure You Want To Logout ?"
       />
-    </SafeAreaView>
+
+      <DeleteAccountModal
+        visible={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onDeleteConfirm={handleDeleteAccount}
+        loading={loading}
+        title="Delete Account"
+        description="This will permanently erase all your data. This cannot be undone."
+      />
+    </LinearGradient>
   );
 };
 
 export default Profile;
 
 const styles = StyleSheet.create({
-  scrollViewContainer: {
-    paddingTop: height * 0.02,
+  container: {
+    flex: 1,
+  },
+
+  headerContainer: {
+    marginBottom: height * 0.015,
+    paddingBottom: height * 0.01,
+  },
+
+  scrollContent: {
+    paddingBottom: height * 0.1,
+  },
+
+  sectionHeaderContainer: {
+    paddingHorizontal: width * 0.04,
+    paddingBottom: height * 0.02,
+  },
+
+  headerTitle: {
+    fontSize: theme.typography.fontSize.lg,
+    fontFamily: theme.typography.fontFamilySemiBold,
+    color: theme.colors.tertiary,
+  },
+
+  headerDescription: {
+    fontSize: theme.typography.fontSize.sm,
+    fontFamily: theme.typography.fontFamilyRegular,
+    color: theme.colors.gray,
   },
 
   profileCards: {

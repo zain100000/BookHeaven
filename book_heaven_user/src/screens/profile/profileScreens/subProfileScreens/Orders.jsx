@@ -19,6 +19,7 @@ import {getAllOrders} from '../../../../redux/slices/orderSlice';
 import Loader from '../../../../utils/customComponents/customLoader/Loader';
 import OrderCard from '../../../../utils/customComponents/customCards/orderCard/OrderCard';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import InputField from '../../../../utils/customComponents/customInputField/InputField';
 
 const {width, height} = Dimensions.get('screen');
@@ -160,10 +161,17 @@ const Orders = () => {
       ]}>
       <View style={styles.headerContainer}>
         <Header
-          title="My Orders"
-          leftIcon={require('../../../../assets/icons/arrow-left.png')}
-          onPressLeft={() => navigation.goBack()}
-        />
+            logo={require('../../../../assets/splashScreen/splash-logo.png')}
+            title="My Orders"
+            leftIcon={
+              <FontAwesome5
+                name="chevron-left"
+                size={width * 0.06}
+                color={theme.colors.white}
+              />
+            }
+            onPressLeft={() => navigation.goBack()}
+          />
       </View>
 
       <View style={styles.searchContainer}>

@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const User = require("../models/user.model");
+const Order = require("../models/order.model");
 const jwt = require("jsonwebtoken");
 const profilePictureUpload = require("../utilities/cloudinary/cloudinary.utility");
 const {
@@ -315,52 +316,50 @@ exports.logoutUser = async (req, res, next) => {
 };
 
 // Delete Profile
-// exports.deleteProfile = async (req, res) => {
-//   try {
-//     const { id } = req.params;
+exports.deleteProfile = async (req, res) => {
+  try {
+    const { id } = req.params;
 
-//     // Find the user by ID
-//     const user = await User.findById(id);
-//     if (!user) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "User Not Found!",
-//       });
-//     }
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User Not Found!",
+      });
+    }
 
-//     // Delete profile picture from Cloudinary if it exists
-//     if (user.profilePicture) {
-//       try {
-//         const publicId = user.profilePicture.split("/").pop().split(".")[0];
-//         await cloudinary.uploader.destroy(
-//           `BookHeaven/profilePictures/${publicId}`
-//         );
-//       } catch (error) {
-//         console.error("❌ Error deleting profile picture:", error);
-//       }
-//     }
+    // Delete profile picture from Cloudinary
+    if (user.profilePicture) {
+      try {
+        const publicId = user.profilePicture.split("/").pop().split(".")[0];
+        await cloudinary.uploader.destroy(
+          `BookHeaven/profilePictures/${publicId}`
+        );
+      } catch (error) {
+        console.error("❌ Error deleting profile picture:", error);
+      }
+    }
 
-//     // Delete related data (cart, favorites, orders, library)
-//     await Cart.deleteMany({ userId: id }); // Delete all user's cart items
-//     await Favorite.deleteMany({ userId: id }); // Delete all user's favorite items
-//     await Order.deleteMany({ userId: id }); // Delete all user's orders
-//     await Library.deleteMany({ userId: id }); // Delete all user's library items
+    // Delete all orders of the user
+    await Order.deleteMany({ userId: id });
 
-//     // Finally, delete the user profile
-//     await User.findByIdAndDelete(id);
+    // No need to delete library separately since it's embedded in user
 
-//     res.status(200).json({
-//       success: true,
-//       message: "User profile and all associated data deleted successfully!",
-//     });
-//   } catch (error) {
-//     console.error("❌ Error deleting user profile:", error);
-//     res.status(500).json({
-//       success: false,
-//       message: "Server Error",
-//     });
-//   }
-// };
+    // Finally delete the user document (cart, favorites, library will be deleted too)
+    await User.findByIdAndDelete(id);
+
+    res.status(201).json({
+      success: true,
+      message: "User profile and all associated data deleted successfully!",
+    });
+  } catch (error) {
+    console.error("❌ Error deleting user profile:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
+  }
+};
 
 // get library
 exports.getLibrary = async (req, res) => {

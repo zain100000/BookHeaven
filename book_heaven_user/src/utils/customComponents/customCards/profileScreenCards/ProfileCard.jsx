@@ -41,7 +41,7 @@ const ProfileScreenCard = ({
             <View style={styles.iconBackground}>
               <Ionicons
                 name={iconName || 'cog-outline'}
-                size={width * 0.05}
+                size={width * 0.06}
                 style={[
                   styles.cardIcon,
                   {
@@ -103,8 +103,8 @@ const styles = StyleSheet.create({
     top: height * 0.002,
     borderWidth: 2,
     borderColor: theme.colors.primary,
-    borderRadius: theme.borderRadius.circle,
-    padding: height * 0.004,
+    padding: height * 0.0042,
+    borderRadius: height * 0.0042 * 6, // Make it full round
   },
 
   cardTitle: {

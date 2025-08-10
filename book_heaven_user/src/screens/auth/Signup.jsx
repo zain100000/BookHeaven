@@ -1,416 +1,315 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
-  SafeAreaView,
-  ScrollView,
-  Text,
-  useColorScheme,
-  StatusBar,
-  Dimensions,
   StyleSheet,
   View,
+  StatusBar,
+  Dimensions,
+  Text,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+  Image,
   TouchableOpacity,
-  Animated,
-  Easing,
 } from 'react-native';
 import {theme} from '../../styles/theme';
-import {useNavigation} from '@react-navigation/native';
+import * as Animatable from 'react-native-animatable';
 import {globalStyles} from '../../styles/globalStyles';
+import AuthHeader from '../../utils/customComponents/customHeader/AuthHeader';
+import Logo from '../../assets/splashScreen/splash-logo.png';
 import InputField from '../../utils/customComponents/customInputField/InputField';
-import {
-  isValidInput,
-  validateEmail,
-  validateName,
-  validatePassword,
-} from '../../utils/customValidations/Validations';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import Feather from 'react-native-vector-icons/Feather';
 import Button from '../../utils/customComponents/customButton/Button';
 import {useDispatch} from 'react-redux';
-import {registerUser} from '../../redux/slices/authSlice';
-import CustomModal from '../../utils/customModals/CustomModal';
+import {useNavigation} from '@react-navigation/native';
+import {
+  isValidInput,
+  validateName,
+  validatePassword,
+  validateEmail,
+} from '../../utils/customValidations/Validations';
 import Toast from 'react-native-toast-message';
+import {registerUser} from '../../redux/slices/authSlice';
+import ImageUploadModal from '../../utils/customModals/ImageUploadModal';
 
 const {width, height} = Dimensions.get('screen');
 
 const Signup = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  const colorScheme = useColorScheme();
-
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const headerTranslateY = useRef(new Animated.Value(30)).current;
-  const formTranslateY = useRef(new Animated.Value(50)).current;
-
+  const [photoURL, setPhotoURL] = useState('');
+  const [newImageURL, setNewImageURL] = useState('');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [hidePassword, setHidePassword] = useState(true);
-  const [isButtonEnabled, setIsButtonEnabled] = useState(false);
-  const [showAuthModal, setShowAuthModal] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [loading, setLoading] = useState(false);
-
   const [nameError, setNameError] = useState('');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [isButtonEnabled, setIsButtonEnabled] = useState('');
+  const [showImageUploadModal, setShowImageUploadModal] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 800,
-        useNativeDriver: true,
-      }),
-      Animated.timing(headerTranslateY, {
-        toValue: 0,
-        duration: 600,
-        easing: Easing.out(Easing.back(1.2)),
-        useNativeDriver: true,
-      }),
-      Animated.timing(formTranslateY, {
-        toValue: 0,
-        duration: 800,
-        delay: 300,
-        easing: Easing.out(Easing.quad),
-        useNativeDriver: true,
-      }),
-    ]).start();
-  }, []);
-
-  useEffect(() => {
-    const statusBarColor = theme.colors.primary;
+    const statusBarColor = theme.colors.tertiary;
     StatusBar.setBackgroundColor(statusBarColor);
   }, []);
 
   useEffect(() => {
     const hasErrors =
-      nameError ||
-      emailError ||
-      passwordError ||
-      !name ||
-      !email ||
-      !password ||
-      setIsButtonEnabled(!hasErrors);
-  }, [nameError, emailError, passwordError]);
+      emailError || passwordError || !name || !email || !password;
+    setIsButtonEnabled(!hasErrors);
+  }, [emailError, passwordError, name, email, password]);
 
   const handleNameChange = value => {
     setName(value);
-    const error = validateName(value);
-    setNameError(error);
-    if (error) {
-      Toast.show({
-        type: 'error',
-        text1: error,
-        position: 'top',
-        visibilityTime: 2000,
-      });
-    }
+    setNameError(validateName(value));
   };
 
   const handleEmailChange = value => {
     setEmail(value);
-    const error = validateEmail(value);
-    setEmailError(error);
-    if (error) {
-      Toast.show({
-        type: 'error',
-        text1: error,
-        position: 'top',
-        visibilityTime: 2000,
-      });
-    }
+    setEmailError(validateEmail(value));
   };
 
   const handlePasswordChange = value => {
     setPassword(value);
-    const error = validatePassword(value);
-    setPasswordError(error);
-    if (error) {
-      Toast.show({
-        type: 'error',
-        text1: error,
-        position: 'top',
-        visibilityTime: 2000,
-      });
-    }
+    setPasswordError(validatePassword(value));
+  };
+
+  const handleImagePress = () => {
+    setShowImageUploadModal(true);
+  };
+
+  const handleImageUpload = url => {
+    setShowImageUploadModal(false);
+    setNewImageURL(url);
+    setPhotoURL(url);
   };
 
   const handleSignup = async () => {
-    if (isValidInput(name, email, password)) {
-      setLoading(true);
-      setShowAuthModal(true);
+    console.log('📌 handleSignup called');
 
-      try {
-        const resultAction = await dispatch(
-          registerUser({userName: name, email, password}),
-        );
+    if (!isValidInput(name, email, password)) {
+      return;
+    }
 
-        if (registerUser.fulfilled.match(resultAction)) {
-          const {user} = resultAction.payload;
-          setShowAuthModal(false);
-          setShowSuccessModal(true);
+    setLoading(true);
 
-          setTimeout(() => {
-            setShowSuccessModal(false);
-            navigation.replace('Signup', {user});
-          }, 3000);
-        } else {
-          const errorMessage =
-            resultAction.payload?.message ||
-            'Register failed. Please check your credentials';
-          console.error('❌ Login failed:', errorMessage);
-          setShowAuthModal(false);
-          setLoading(false);
-        }
-      } catch (err) {
-        console.error('🔥 Unexpected error:', err);
-        setShowAuthModal(false);
-        setLoading(false);
-      } finally {
-        setLoading(false);
-        setShowAuthModal(false);
+    try {
+      // Prepare form data
+      const formData = new FormData();
+      formData.append('userName', name);
+      formData.append('email', email);
+      formData.append('password', password);
+
+      // Add profile picture if exists
+      if (newImageURL) {
+        const uriParts = newImageURL.split('/');
+        const fileName = uriParts[uriParts.length - 1];
+        const fileType = fileName.split('.').pop();
+
+        formData.append('profilePicture', {
+          uri: newImageURL,
+          name: fileName,
+          type: `image/${fileType}`,
+        });
       }
+
+      // Dispatch signup action
+      const resultAction = await dispatch(registerUser(formData));
+
+      if (registerUser.fulfilled.match(resultAction)) {
+        Toast.show({
+          type: 'success',
+          text1: 'Signup Successful!',
+          text2: 'Account Created!',
+        });
+
+        // Reset fields
+        setName('');
+        setEmail('');
+        setPassword('');
+        setNewImageURL('');
+
+        setTimeout(() => {
+          navigation.replace('Signin');
+        }, 3000);
+      } else {
+        Toast.show({
+          type: 'error',
+          text1: 'Signup Failed!',
+          text2: 'Please check your details',
+        });
+      }
+    } catch (err) {
+      Toast.show({
+        type: 'error',
+        text1: 'Unexpected Error!',
+        text2: 'Please try again later',
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <SafeAreaView
-      style={[
-        globalStyles.container,
-        styles.primaryContainer,
-        {
-          backgroundColor: theme.colors.primary,
-        },
-      ]}>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        {/* Animated Header */}
-        <Animated.View
-          style={[
-            styles.headerContainer,
-            {
-              opacity: fadeAnim,
-              transform: [{translateY: headerTranslateY}],
-            },
-          ]}>
-          <Text style={styles.headerTitle}>Create Account</Text>
-          <Text style={styles.headerDescription}>Sign up to get started</Text>
-        </Animated.View>
+    <KeyboardAvoidingView
+      style={[globalStyles.container, styles.primaryContainer]}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <View style={styles.headerContainer}>
+        <AuthHeader logo={Logo} title={'BookHeaven'} />
+      </View>
 
-        {/* Animated Form */}
-        <Animated.View
-          style={[
-            styles.formContainer,
-            {
-              opacity: fadeAnim,
-              transform: [{translateY: formTranslateY}],
-            },
-          ]}>
-          {/* Name Input */}
-          <View style={styles.nameContainer}>
-            <Text
-              style={[
-                globalStyles.inputLabel,
-                styles.label,
-                {
-                  color: theme.colors.white,
-                },
-              ]}>
-              Name
-            </Text>
-            <Animated.View
-              style={[
-                styles.iconContainer,
-                {
-                  opacity: fadeAnim.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [0, 1],
-                  }),
-                },
-              ]}>
-              <Ionicons
-                name="person"
-                size={width * 0.05}
-                color={theme.colors.primary}
-              />
-            </Animated.View>
+      <ScrollView
+        contentContainerStyle={styles.scrollContainer}
+        keyboardShouldPersistTaps="handled">
+        <Animatable.View
+          animation="fadeInUp"
+          duration={1000}
+          delay={300}
+          style={styles.formContainer}>
+          <Text style={styles.title}>Sign Up</Text>
+          <Text style={styles.description}>
+            Create an account and start exploring the world of books!
+          </Text>
 
+          <Animatable.View
+            animation="fadeInRight"
+            duration={800}
+            delay={400}
+            style={styles.inputContainer}>
+            <TouchableOpacity
+              style={styles.imgContainer}
+              activeOpacity={0.9}
+              onPress={handleImagePress}>
+              {newImageURL || photoURL ? (
+                <Image
+                  source={{uri: newImageURL || photoURL}}
+                  style={styles.image}
+                />
+              ) : (
+                <Image
+                  source={require('../../assets/placeholders/default-avatar.png')}
+                  style={styles.image}
+                />
+              )}
+            </TouchableOpacity>
+          </Animatable.View>
+
+          <Animatable.View
+            animation="fadeInRight"
+            duration={800}
+            delay={400}
+            style={styles.inputContainer}>
             <InputField
+              placeholder="Name"
               value={name}
               onChangeText={handleNameChange}
-              placeholder="Enter Name"
-              placeholderTextColor={theme.colors.primary}
-              backgroundColor={theme.colors.dark}
+              leftIcon={
+                <Feather
+                  name={'user'}
+                  size={width * 0.044}
+                  color={theme.colors.primary}
+                />
+              }
             />
-          </View>
+            {nameError && (
+              <Text style={globalStyles.textError}>{nameError}</Text>
+            )}
+          </Animatable.View>
 
-          {/* Email Input */}
-          <View style={styles.emailContainer}>
-            <Text
-              style={[
-                globalStyles.inputLabel,
-                styles.label,
-                {
-                  color: theme.colors.white,
-                },
-              ]}>
-              Email
-            </Text>
-            <Animated.View
-              style={[
-                styles.iconContainer,
-                {
-                  opacity: fadeAnim.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [0, 1],
-                  }),
-                },
-              ]}>
-              <Ionicons
-                name="mail"
-                size={width * 0.05}
-                color={theme.colors.primary}
-              />
-            </Animated.View>
-
+          <Animatable.View
+            animation="fadeInRight"
+            duration={800}
+            delay={500}
+            style={styles.inputContainer}>
             <InputField
+              placeholder="Email"
               value={email}
               onChangeText={handleEmailChange}
-              placeholder="Enter Email"
-              placeholderTextColor={theme.colors.primary}
-              backgroundColor={theme.colors.dark}
+              keyboardType="email-address"
+              leftIcon={
+                <Feather
+                  name={'mail'}
+                  size={width * 0.044}
+                  color={theme.colors.primary}
+                />
+              }
             />
-          </View>
+            {emailError && (
+              <Text style={globalStyles.textError}>{emailError}</Text>
+            )}
+          </Animatable.View>
 
-          {/* Password Input */}
-          <View style={styles.passwordContainer}>
-            <Text
-              style={[
-                globalStyles.inputLabel,
-                styles.label,
-                {
-                  color: theme.colors.white,
-                },
-              ]}>
-              Password
-            </Text>
-            <Animated.View
-              style={[
-                styles.iconContainer,
-                {
-                  opacity: fadeAnim.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [0, 1],
-                  }),
-                },
-              ]}>
-              <Ionicons
-                name="lock-closed"
-                size={width * 0.05}
-                color={theme.colors.primary}
-              />
-            </Animated.View>
+          <Animatable.View
+            animation="fadeInRight"
+            duration={800}
+            delay={700}
+            style={styles.inputContainer}>
             <InputField
+              placeholder="Password"
               value={password}
               onChangeText={handlePasswordChange}
-              placeholder="Enter Password"
               secureTextEntry={hidePassword}
-              placeholderTextColor={theme.colors.primary}
-              backgroundColor={theme.colors.dark}
+              leftIcon={
+                <Feather
+                  name={'lock'}
+                  size={width * 0.044}
+                  color={theme.colors.primary}
+                />
+              }
+              rightIcon={
+                <Feather
+                  name={hidePassword ? 'eye-off' : 'eye'}
+                  size={width * 0.054}
+                  color={theme.colors.primary}
+                />
+              }
+              onRightIconPress={() => setHidePassword(!hidePassword)}
             />
-            <TouchableOpacity
-              style={styles.eyeIconContainer}
-              onPress={() => setHidePassword(!hidePassword)}>
-              <Ionicons
-                name={hidePassword ? 'eye-off' : 'eye'}
-                size={width * 0.06}
-                color={theme.colors.primary}
-              />
-            </TouchableOpacity>
-          </View>
+            {passwordError && (
+              <Text style={globalStyles.textError}>{passwordError}</Text>
+            )}
+          </Animatable.View>
 
-          {/* Animated Button */}
-          <Animated.View
-            style={[
-              styles.btnContainer,
-              {
-                opacity: fadeAnim,
-                transform: [
-                  {
-                    scale: fadeAnim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [0.9, 1],
-                    }),
-                  },
-                ],
-              },
-            ]}>
+          <Animatable.View
+            animation="fadeInUp"
+            duration={800}
+            delay={900}
+            style={styles.btnContainer}>
             <Button
               title="SIGN UP"
+              onPress={handleSignup}
+              width={width * 0.95}
               loading={loading}
               disabled={!isButtonEnabled}
-              onPress={handleSignup}
-              width={width * 0.96}
-              backgroundColor={theme.colors.secondary}
+              backgroundColor={theme.colors.primary}
               textColor={theme.colors.white}
             />
-          </Animated.View>
+          </Animatable.View>
 
-          {/* Animated Signin Link */}
-          <Animated.View
-            style={[
-              styles.signinContainer,
-              {
-                opacity: fadeAnim,
-                transform: [
-                  {
-                    translateX: fadeAnim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [50, 0],
-                    }),
-                  },
-                ],
-              },
-            ]}>
-            <Text
-              style={[
-                styles.signinText,
-                {
-                  color: theme.colors.white,
-                },
-              ]}>
-              Already have an account?
-            </Text>
-            <TouchableOpacity onPress={() => navigation.navigate('Signin')}>
-              <Text
-                style={[
-                  styles.signinLink,
-                  {
-                    color: theme.colors.secondary,
-                  },
-                ]}>
-                Sign In
-              </Text>
+          <Animatable.View
+            animation="fadeInUp"
+            duration={800}
+            delay={1100}
+            style={styles.signupContainer}>
+            <Text style={[styles.signupText]}>Already have an account?</Text>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('Signin')}
+              activeOpacity={0.9}>
+              <Text style={[styles.signupLink]}>Sign In</Text>
             </TouchableOpacity>
-          </Animated.View>
-        </Animated.View>
+          </Animatable.View>
+        </Animatable.View>
       </ScrollView>
 
-      {/* Keep existing modals */}
-      <CustomModal
-        visible={showAuthModal}
-        title="Working!"
-        description="Please wait while we creating your account"
-        animationSource={require('../../assets/animations/email.json')}
-        onClose={() => setShowAuthModal(false)}
+      <ImageUploadModal
+        visible={showImageUploadModal}
+        onClose={() => setShowImageUploadModal(false)}
+        onImageUpload={handleImageUpload}
+        title="Upload Image!"
+        description="Please Choose Your Profile Picture To Upload."
       />
-
-      <CustomModal
-        visible={showSuccessModal}
-        title="Success!"
-        description="Registration Successful"
-        animationSource={require('../../assets/animations/success.json')}
-        onClose={() => setShowSuccessModal(false)}
-      />
-    </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -419,68 +318,83 @@ export default Signup;
 const styles = StyleSheet.create({
   primaryContainer: {
     flex: 1,
+    backgroundColor: theme.colors.secondary,
+  },
+
+  headerContainer: {
+    height: height * 0.2,
   },
 
   scrollContainer: {
     flexGrow: 1,
-    paddingHorizontal: width * 0.024,
-    paddingTop: height * 0.02,
-  },
-
-  headerContainer: {
-    gap: theme.gap(0.2),
-  },
-
-  headerTitle: {
-    fontSize: theme.typography.fontSize.xxl,
-    fontFamily: theme.typography.fontFamilySemiBold,
-    color: theme.colors.white,
-    textTransform: 'capitalize',
-    marginTop: height * 0.02,
-  },
-
-  headerDescription: {
-    fontSize: theme.typography.fontSize.lg,
-    fontFamily: theme.typography.fontFamilyMedium,
-    color: theme.colors.white,
-    left: width * 0.01,
   },
 
   formContainer: {
-    marginTop: height * 0.04,
+    flex: 1,
+    backgroundColor: theme.colors.white,
+    borderTopLeftRadius: theme.borderRadius.large,
+    borderTopRightRadius: theme.borderRadius.large,
+    paddingTop: height * 0.04,
+    paddingHorizontal: width * 0.024,
+    paddingBottom: height * 0.02,
   },
 
-  iconContainer: {
-    position: 'absolute',
+  title: {
+    fontSize: theme.typography.fontSize.xl,
+    fontFamily: theme.typography.fontFamilySemiBold,
+    textAlign: 'justify',
+    marginBottom: height * 0.01,
+    color: theme.colors.dark,
     left: width * 0.02,
-    transform: [{translateY: width * 0.154}],
-    zIndex: 8,
   },
 
-  eyeIconContainer: {
-    alignSelf: 'flex-end',
-    right: width * 0.02,
-    bottom: theme.spacing(6.64),
+  description: {
+    fontSize: theme.typography.fontSize.sm,
+    fontFamily: theme.typography.fontFamilyRegular,
+    textAlign: 'justify',
+    marginBottom: height * 0.02,
+    color: theme.colors.dark,
+    left: width * 0.02,
+  },
+
+  inputContainer: {
+    marginBottom: height * 0.015,
+  },
+
+  imgContainer: {
+    alignSelf: 'center',
+  },
+
+  image: {
+    width: width * 0.2,
+    height: width * 0.2,
+    borderRadius: (width * 0.4) / 2,
+    resizeMode: 'cover',
   },
 
   btnContainer: {
-    marginTop: height * 0.01,
-    alignItems: 'center',
+    marginTop: height * 0.04,
+    marginBottom: height * 0.02,
   },
 
-  signinContainer: {
+  signupContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginTop: height * 0.045,
+    marginTop: height * 0.05,
   },
 
-  signinText: {
-    fontSize: theme.typography.fontSize.md,
+  signupText: {
+    fontSize: theme.typography.fontSize.sm,
     fontFamily: theme.typography.fontFamilyRegular,
+    textAlign: 'justify',
+    color: theme.colors.dark,
+    top: height * 0.008,
   },
 
-  signinLink: {
+  signupLink: {
     fontSize: theme.typography.fontSize.md,
     fontFamily: theme.typography.fontFamilyBold,
+    textAlign: 'justify',
+    color: theme.colors.primary,
   },
 });

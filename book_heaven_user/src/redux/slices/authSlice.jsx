@@ -7,38 +7,61 @@ const {BASE_URL} = CONFIG;
 
 export const registerUser = createAsyncThunk(
   'user/registerUser',
-  async (userData, {rejectWithValue}) => {
+  async (formData, {rejectWithValue}) => {
     try {
+      console.log('Sending register request...');
       const response = await axios.post(
         `${BASE_URL}/user/signup-user`,
-        userData,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        },
       );
-      return response.data;
+
+      const {success, message, user} = response.data;
+
+      return {
+        success,
+        message,
+        user,
+      };
     } catch (error) {
-      return rejectWithValue(error.response.data);
+      const errData = error.response?.data || {
+        message: 'Network Error - Could not reach server',
+      };
+      console.error('Registration error:', errData);
+      return rejectWithValue(errData);
     }
   },
 );
 
 export const loginUser = createAsyncThunk(
   'user/loginUser',
-  async (loginData, {rejectWithValue}) => {
+  async (loginData, { rejectWithValue }) => {
+    console.log('🚀 loginUser called with:', loginData);
+
     try {
       const response = await axios.post(
         `${BASE_URL}/user/signin-user`,
         loginData,
       );
+      console.log('✅ Login response:', response.data);
 
-      const {token, data} = response.data;
+      const { token, data } = response.data;
 
       const user = {
         id: data.id,
         email: data.email,
       };
+      console.log('👤 Parsed user:', user);
+      console.log('🔑 Token received:', token);
 
       await AsyncStorage.setItem('authToken', token);
+      console.log('💾 Token saved to AsyncStorage');
 
-      return {user, token};
+      return { user, token };
     } catch (error) {
       console.error('❌ Login error:', error.response?.data || error.message);
       return rejectWithValue(

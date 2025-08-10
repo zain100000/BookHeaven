@@ -13,10 +13,11 @@ import Signup from '../screens/auth/Signup';
 
 // Dashboard Imports
 import BottomNavigator from '../navigation/bottomNavigator/BottomNavigator';
+import BookCategory from '../screens/dashBoard/bookCategoryScreens/BookCategory';
+import BookDetail from '../screens/dashBoard/bookCategoryScreens/BookDetail';
 
 // Profile Imports
 import Account from '../screens/profile/profileScreens/subProfileScreens/Account';
-import Address from '../screens/profile/profileScreens/subProfileScreens/Address';
 import Favorites from '../screens/profile/profileScreens/subProfileScreens/Favorites';
 import Library from '../screens/profile/profileScreens/subProfileScreens/Library';
 import PrivacyPolicy from '../screens/profile/profileScreens/subProfileScreens/PrivacyPolicy';
@@ -25,6 +26,7 @@ import AppUsage from '../screens/profile/profileScreens/subProfileScreens/AppUsa
 // Order(Cart + CheckOut) Imports
 import Orders from '../screens/profile/profileScreens/subProfileScreens/Orders';
 import CheckOut from '../screens/checkout/CheckOut';
+import Receipt from '../screens/receipt/Receipt';
 
 const Stack = createNativeStackNavigator();
 
@@ -58,9 +60,21 @@ const AppNavigator = () => {
         </Stack.Screen>
 
         {/* Dashboard Routes */}
-        <Stack.Screen name="Home">
+        <Stack.Screen name="Main">
           {props => (
             <BottomNavigator {...props} setStatusBarColor={setStatusBarColor} />
+          )}
+        </Stack.Screen>
+
+        <Stack.Screen name="Category_Books">
+          {props => (
+            <BookCategory {...props} setStatusBarColor={setStatusBarColor} />
+          )}
+        </Stack.Screen>
+
+        <Stack.Screen name="Book_Detail">
+          {props => (
+            <BookDetail {...props} setStatusBarColor={setStatusBarColor} />
           )}
         </Stack.Screen>
 
@@ -68,12 +82,6 @@ const AppNavigator = () => {
         <Stack.Screen name="My_Account">
           {props => (
             <Account {...props} setStatusBarColor={setStatusBarColor} />
-          )}
-        </Stack.Screen>
-
-        <Stack.Screen name="Address">
-          {props => (
-            <Address {...props} setStatusBarColor={setStatusBarColor} />
           )}
         </Stack.Screen>
 
@@ -99,7 +107,7 @@ const AppNavigator = () => {
           )}
         </Stack.Screen>
 
-        <Stack.Screen name="Terms_Conditions">
+        <Stack.Screen name="App_Usage">
           {props => (
             <AppUsage {...props} setStatusBarColor={setStatusBarColor} />
           )}
@@ -109,6 +117,12 @@ const AppNavigator = () => {
         <Stack.Screen name="CheckOut">
           {props => (
             <CheckOut {...props} setStatusBarColor={setStatusBarColor} />
+          )}
+        </Stack.Screen>
+
+        <Stack.Screen name="Receipt">
+          {props => (
+            <Receipt {...props} setStatusBarColor={setStatusBarColor} />
           )}
         </Stack.Screen>
       </Stack.Navigator>

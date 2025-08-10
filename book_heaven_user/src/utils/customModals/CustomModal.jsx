@@ -1,77 +1,148 @@
-import React from 'react';
+import React, {useRef, useEffect} from 'react';
 import {
   Modal,
   View,
-  Text,
   StyleSheet,
+  TouchableWithoutFeedback,
+  Animated,
   Dimensions,
+  Text,
+  Image,
   TouchableOpacity,
+  ScrollView,
+  Easing,
 } from 'react-native';
-import LottieView from 'lottie-react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import Feather from 'react-native-vector-icons/Feather';
 import {theme} from '../../styles/theme';
-import {globalStyles} from '../../styles/globalStyles';
 
 const {width, height} = Dimensions.get('screen');
+const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
-const CustomModal = ({
-  visible,
-  onClose,
-  title,
-  description,
-  animationSource,
-  primaryButtonText,
-  onPrimaryButtonPress,
-  secondaryButtonText,
-  onSecondaryButtonPress,
-}) => {
+const CustomModal = ({visible, onClose, title, contentList}) => {
+  const slideAnim = useRef(new Animated.Value(height)).current;
+  const backdropAnim = useRef(new Animated.Value(0)).current;
+  const contentOpacity = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (visible) {
+      Animated.sequence([
+        Animated.timing(backdropAnim, {
+          toValue: 1,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.parallel([
+          Animated.timing(slideAnim, {
+            toValue: 0,
+            duration: 400,
+            useNativeDriver: true,
+            easing: Easing.out(Easing.back(1)),
+          }),
+          Animated.timing(contentOpacity, {
+            toValue: 1,
+            duration: 300,
+            delay: 150,
+            useNativeDriver: true,
+          }),
+        ]),
+      ]).start();
+    } else {
+      Animated.sequence([
+        Animated.parallel([
+          Animated.timing(slideAnim, {
+            toValue: height,
+            duration: 300,
+            useNativeDriver: true,
+            easing: Easing.in(Easing.ease),
+          }),
+          Animated.timing(contentOpacity, {
+            toValue: 0,
+            duration: 150,
+            useNativeDriver: true,
+          }),
+        ]),
+        Animated.timing(backdropAnim, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    }
+  }, [visible]);
+
+  const backdropOpacity = backdropAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 0.5],
+  });
+
+  const jazzCashIcon = contentList.find(item => item.id === 'JazzCash')?.icon;
+  const easyPaisaIcon = contentList.find(item => item.id === 'EasyPaisa')?.icon;
+
   return (
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={visible}
-      onRequestClose={onClose}>
-      <View style={styles.centeredView}>
-        <View style={styles.modalView}>
-          {animationSource && (
-            <LottieView
-              source={animationSource}
-              autoPlay
-              loop
-              style={styles.animation}
-            />
-          )}
-          {title && (
-            <Text style={[globalStyles.textBlack, styles.modalText]}>
-              {title}
-            </Text>
-          )}
-          {description && (
-            <Text style={[globalStyles.textBlack, styles.descriptionText]}>
-              {description}
-            </Text>
-          )}
-          <View style={styles.buttonContainer}>
-            {primaryButtonText && (
-              <TouchableOpacity
-                style={styles.primaryButton}
-                onPress={onPrimaryButtonPress}>
-                <Text style={styles.primaryButtonText}>
-                  {primaryButtonText}
-                </Text>
-              </TouchableOpacity>
-            )}
-            {secondaryButtonText && (
-              <TouchableOpacity
-                style={styles.secondaryButton}
-                onPress={onSecondaryButtonPress}>
-                <Text style={styles.secondaryButtonText}>
-                  {secondaryButtonText}
-                </Text>
-              </TouchableOpacity>
-            )}
-          </View>
+    <Modal transparent visible={visible} onRequestClose={onClose}>
+      <TouchableWithoutFeedback onPress={onClose}>
+        <Animated.View style={[styles.overlay, {opacity: backdropOpacity}]} />
+      </TouchableWithoutFeedback>
+
+      <AnimatedLinearGradient
+        colors={[theme.colors.primary, theme.colors.secondary]}
+        start={{x: 0, y: 0}}
+        end={{x: 1, y: 1}}
+        style={[
+          styles.sheet,
+          {
+            transform: [
+              {
+                translateY: slideAnim.interpolate({
+                  inputRange: [0, height],
+                  outputRange: [0, height],
+                }),
+              },
+            ],
+          },
+        ]}>
+        {/* Close Icon */}
+        <View style={styles.header}>
+          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+            <Feather name="x" size={24} color={theme.colors.error} />
+          </TouchableOpacity>
         </View>
-      </View>
+
+        {/* Modal Content */}
+        <Animated.View style={[styles.container, {opacity: contentOpacity}]}>
+          <Text style={styles.title}>{title}</Text>
+
+          <ScrollView
+            contentContainerStyle={styles.content}
+            showsVerticalScrollIndicator={false}>
+            {/* Payment Info Banner */}
+            <View style={styles.paymentInfoBanner}>
+              <View style={styles.paymentIconsContainer}>
+                {jazzCashIcon && (
+                  <Image
+                    source={jazzCashIcon}
+                    style={styles.paymentInfoIcon}
+                    resizeMode="contain"
+                  />
+                )}
+                {easyPaisaIcon && (
+                  <Image
+                    source={easyPaisaIcon}
+                    style={styles.paymentInfoIcon}
+                    resizeMode="contain"
+                  />
+                )}
+              </View>
+              <Text style={styles.paymentInfoText}>
+                JazzCash and EasyPaisa aren't connected to our app just yet —
+                but no worries! You can still make your payment manually through
+                the official apps.
+              </Text>
+            </View>
+          </ScrollView>
+        </Animated.View>
+      </AnimatedLinearGradient>
     </Modal>
   );
 };
@@ -79,86 +150,101 @@ const CustomModal = ({
 export default CustomModal;
 
 const styles = StyleSheet.create({
-  centeredView: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: '#000',
   },
 
-  modalView: {
-    margin: height * 0.4,
-    backgroundColor: theme.colors.white,
-    borderRadius: theme.borderRadius.large,
-    padding: height * 0.02,
-    alignItems: 'center',
-    shadowColor: theme.colors.dark,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-    width: width * 0.92,
-    height: height * 0.44,
+  sheet: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: height * 0.5,
+    borderTopLeftRadius: theme.borderRadius.large,
+    borderTopRightRadius: theme.borderRadius.large,
+    paddingHorizontal: width * 0.05,
+    paddingTop: height * 0.03,
+    overflow: 'hidden',
   },
 
-  animation: {
-    width: width * 0.5,
-    height: width * 0.5,
-    marginBottom: height * 0.034,
-  },
-
-  modalText: {
+  header: {
+    alignItems: 'flex-end',
     marginBottom: height * 0.01,
-    textAlign: 'center',
+  },
+
+  closeButton: {
+    width: width * 0.08,
+    height: width * 0.08,
+    borderRadius: width * 0.04,
+    backgroundColor: 'rgba(255,255,255,0.85)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {width: 2, height: 2},
+    shadowOpacity: 0.15,
+    elevation: 6,
+  },
+
+  container: {
+    flex: 1,
+  },
+
+  title: {
     fontSize: theme.typography.fontSize.lg,
-    color: theme.colors.dark,
+    fontFamily: theme.typography.fontFamilyBold,
+    color: theme.colors.white,
+    marginBottom: height * 0.02,
   },
 
-  descriptionText: {
-    textAlign: 'center',
-    color: theme.colors.dark,
-    fontSize: theme.typography.fontSize.md,
+  content: {
+    paddingBottom: height * 0.02,
   },
 
-  buttonContainer: {
-    marginTop: height * 0.04,
+  paymentInfoBanner: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: theme.borderRadius.medium,
+    padding: width * 0.04,
+    marginBottom: height * 0.03,
+  },
+
+  paymentIconsContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-  },
-
-  primaryButton: {
-    backgroundColor: theme.colors.primary,
-    borderRadius: theme.borderRadius.large,
-    paddingVertical: height * 0.012,
-    paddingHorizontal: width * 0.048,
-    alignItems: 'center',
     justifyContent: 'center',
-    minWidth: width * 0.3,
-    minHeight: height * 0.06,
+    marginBottom: height * 0.015,
   },
 
-  primaryButtonText: {
-    color: theme.colors.white,
-    fontSize: theme.typography.fontSize.md,
+  paymentInfoIcon: {
+    width: width * 0.12,
+    height: height * 0.06,
+    marginHorizontal: width * 0.02,
   },
 
-  secondaryButton: {
-    backgroundColor: theme.colors.secondary,
-    borderRadius: theme.borderRadius.large,
-    paddingVertical: height * 0.012,
-    paddingHorizontal: width * 0.048,
+  paymentInfoText: {
+    fontSize: theme.typography.fontSize.xs,
+    fontFamily: theme.typography.fontFamilyRegular,
+    color: '#E0E0E0',
+    textAlign: 'center',
+    lineHeight: 18,
+  },
+
+  item: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    minWidth: width * 0.3,
-    minHeight: height * 0.06,
+    marginBottom: height * 0.018,
   },
 
-  secondaryButtonText: {
-    color: theme.colors.white,
-    fontSize: theme.typography.fontSize.md,
+  icon: {
+    width: width * 0.08,
+    height: height * 0.04,
+    marginRight: width * 0.04,
+  },
+
+  textContainer: {
+    flex: 1,
   },
 });

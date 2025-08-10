@@ -27,6 +27,7 @@ import Loader from '../../../utils/customComponents/customLoader/Loader';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Button from '../../../utils/customComponents/customButton/Button';
 import {useNavigation} from '@react-navigation/native';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 const {width, height} = Dimensions.get('screen');
 
@@ -108,20 +109,31 @@ const Cart = () => {
     if (!cartItems.length) return;
 
     const formattedItems = cartItems.map(item => ({
+      productId: item.bookId._id, // Changed to use bookId._id
       title: item.bookId.title,
       quantity: item.quantity,
-      unitPrice: item.unitPrice,
-
+      unitPrice: item.bookId.price, // Changed to use bookId.price
     }));
 
-    const userDetails = cartItems[0].userId;
+    const userDetails = {
+      address: cartItems[0].userId.address,
+      phone: cartItems[0].userId.phone,
+      userName: cartItems[0].userId.userName,
+    };
+
+    const itemTotal = cartItems.reduce(
+      (sum, item) => sum + item.bookId.price * item.quantity,
+      0,
+    );
+
+    const shippingFee = 50;
+    const totalAmount = itemTotal + shippingFee;
 
     navigation.navigate('CheckOut', {
       cartItems: formattedItems,
       userDetails,
       totalAmount,
       shippingFee,
-      totalPayment: totalAmount,
     });
   };
 
@@ -139,9 +151,22 @@ const Cart = () => {
       style={[globalStyles.container, {backgroundColor: theme.colors.white}]}>
       <View style={styles.headerContainer}>
         <Header
+          logo={require('../../../assets/splashScreen/splash-logo.png')}
           title="Cart"
-          leftIcon={require('../../../assets/icons/arrow-left.png')}
-          rightIcon={require('../../../assets/icons/bell.png')}
+          leftIcon={
+            <FontAwesome5
+              name="chevron-left"
+              size={width * 0.06}
+              color={theme.colors.white}
+            />
+          }
+          rightIcon={
+            <FontAwesome5
+              name="bell"
+              size={width * 0.06}
+              color={theme.colors.white}
+            />
+          }
         />
       </View>
 

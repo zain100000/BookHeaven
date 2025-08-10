@@ -29,5 +29,12 @@ router.patch(
   orderController.updatePaymentStatus
 );
 
+// Route to delete order
+router.delete(
+  "/delete-order/:id",
+  protect,
+  orderController.deleteOrder
+);
+
 // Export the router for use in the main application
 module.exports = router;

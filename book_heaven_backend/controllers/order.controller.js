@@ -5,52 +5,98 @@ const Book = require("../models/book.model");
 // Place a new order
 exports.placeOrder = async (req, res) => {
   try {
+    const { items, shippingAddress, shippingFee, paymentMethod, totalAmount } =
+      req.body;
     const userId = req.user.id;
-    const { items } = req.body;
 
-    // Validate cart
-    if (!items || items.length === 0) {
-      return res.status(400).json({ success: false, message: "Cart is empty" });
+    if (!items?.length) {
+      return res.status(400).json({
+        success: false,
+        message: "Cart is empty",
+      });
     }
 
-    // Fetch user
-    const user = await User.findById(userId);
-    if (!user) {
-      return res
-        .status(404)
-        .json({ success: false, message: "User not found" });
+    if (!shippingAddress || !shippingFee || !paymentMethod || !totalAmount) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Shipping address, shipping fee, payment method, and total amount are required",
+      });
     }
 
-    // Validate stock and process items
+    // Validate calculate subtotal
+    let calculatedSubtotal = 0;
     for (const item of items) {
-      const book = await Book.findById(item.bookId);
+      const book = await Book.findById(item.bookId); // Changed Product -> Book, productId -> bookId
       if (!book) {
-        return res
-          .status(404)
-          .json({ success: false, message: `Book ${item.bookId} not found` });
-      }
-      if (book.stock < item.quantity) {
-        return res.status(400).json({
+        return res.status(404).json({
           success: false,
-          message: `Insufficient stock for ${book.title}. Available: ${book.stock}`,
+          message: `Book ${item.bookId} not found`,
         });
       }
-      // Reduce stock immediately
-      book.stock -= item.quantity;
-      await book.save();
+
+      calculatedSubtotal += book.price * item.quantity;
     }
 
-    // Create and save order
-    const newOrder = new Order({ userId, items, status: "PENDING" });
-    await newOrder.save();
+    const numericShippingFee = parseFloat(shippingFee);
+    const calculatedTotal = calculatedSubtotal + numericShippingFee;
 
-    // Only add order reference to user (NOT library)
-    user.orders.push({ orderId: newOrder._id, status: "PENDING" });
-    await user.save();
+    if (calculatedTotal !== totalAmount) {
+      return res.status(400).json({
+        success: false,
+        message: "Calculated total amount doesn't match provided amount",
+      });
+    }
 
-    res.status(201).json({ success: true, order: newOrder });
+    // Create the order with initial statuses
+    const order = new Order({
+      userId,
+      items,
+      shippingAddress,
+      shippingFee: shippingFee.toString(),
+      paymentMethod,
+      totalAmount,
+      status: "ORDER_RECEIVED",
+      payment: paymentMethod === "COD" ? "PENDING" : "UNPAID",
+      statusHistory: [
+        {
+          status: "ORDER_RECEIVED",
+          changedAt: new Date(),
+          changedBy: "system",
+        },
+      ],
+    });
+
+    // Save the order
+    const savedOrder = await order.save();
+
+    // Update the user's orders array
+    await User.findByIdAndUpdate(
+      userId,
+      {
+        $push: {
+          orders: {
+            orderId: savedOrder._id,
+            status: "ORDER_RECEIVED",
+            placedAt: new Date(),
+          },
+        },
+      },
+      { new: true }
+    );
+
+    res.status(201).json({
+      success: true,
+      message: "Order placed successfully. Please complete payment.",
+      order: savedOrder,
+    });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Server error" });
+    console.error("Order Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error while placing order",
+      error: error.message,
+    });
   }
 };
 
@@ -176,106 +222,106 @@ exports.cancelOrder = async (req, res) => {
 // Update the status of an order (only for SuperAdmin)
 exports.updateOrderStatus = async (req, res) => {
   try {
-    const { status } = req.body;
-    const { id } = req.params;
-    const userRole = req.user.role;
-
-    // Authorization check
-    if (userRole !== "SUPERADMIN") {
+    // Only SUPERADMIN can update order status
+    if (req.user.role !== "SUPERADMIN") {
       return res.status(403).json({
         success: false,
-        message: "Unauthorized: Only Super Admin can update order status",
+        message: "Unauthorized - Only SUPERADMIN can update order status",
       });
     }
 
-    // Find order with populated items
-    const order = await Order.findById(id).populate("items.bookId");
+    const { status } = req.body;
+    const order = await Order.findById(req.params.id);
+
     if (!order) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Order not found" });
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
     }
 
-    // Validate status
+    // Valid statuses for coffee shop
     const validStatuses = [
-      "PENDING",
-      "PROCESSING",
-      "SHIPPED",
-      "DELIVERED",
+      "ORDER_RECEIVED",
+      "PAYMENT_CONFIRMED",
+      "PREPARING",
+      "READY_FOR_PICKUP",
+      "PICKED_UP",
+      "COMPLETED",
       "CANCELLED",
+      "REFUNDED",
     ];
-    if (!validStatuses.includes(status)) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Invalid status" });
-    }
 
-    // Prevent invalid transitions
-    if (
-      status === "CANCELLED" &&
-      ["SHIPPED", "DELIVERED"].includes(order.status)
-    ) {
+    if (!validStatuses.includes(status)) {
       return res.status(400).json({
         success: false,
-        message: "Cannot cancel shipped/delivered orders",
+        message: "Invalid status",
       });
     }
 
-    const previousStatus = order.status;
+    // Status transition validation
+    const currentStatus = order.status;
+
+    // Cannot revert from finalized states
+    if (["COMPLETED", "CANCELLED", "REFUNDED"].includes(currentStatus)) {
+      return res.status(400).json({
+        success: false,
+        message: `Cannot modify order from ${currentStatus} state`,
+      });
+    }
+
+    // Valid status transitions
+    if (status === "READY_FOR_PICKUP" && currentStatus !== "PREPARING") {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Order must be in PREPARING status before marking as READY_FOR_PICKUP",
+      });
+    }
+
+    if (status === "PICKED_UP" && currentStatus !== "READY_FOR_PICKUP") {
+      return res.status(400).json({
+        success: false,
+        message: "Order must be READY_FOR_PICKUP before marking as PICKED_UP",
+      });
+    }
+
+    if (status === "COMPLETED" && currentStatus !== "PICKED_UP") {
+      return res.status(400).json({
+        success: false,
+        message: "Order must be PICKED_UP before marking as COMPLETED",
+      });
+    }
+
+    // Update order status and history
     order.status = status;
-
-    // Restore stock if cancelling
-    if (status === "CANCELLED") {
-      for (const item of order.items) {
-        const book = await Book.findById(item.bookId);
-        if (book) {
-          book.stock += item.quantity;
-          await book.save();
-        }
-      }
-    }
-
-    // Add to library ONLY when delivered
-    if (status === "DELIVERED") {
-      const user = await User.findById(order.userId);
-      if (user) {
-        for (const item of order.items) {
-          const exists = user.library.some(
-            (lib) => lib.bookId.toString() === item.bookId._id.toString()
-          );
-
-          if (!exists) {
-            user.library.push({
-              bookId: item.bookId._id,
-              bookFile: item.bookId.bookFile,
-              purchasedAt: new Date(),
-            });
-          }
-        }
-        await user.save();
-      }
-    }
+    order.statusHistory = order.statusHistory || [];
+    order.statusHistory.push({
+      status,
+      changedAt: new Date(),
+      changedBy: req.user._id,
+    });
 
     await order.save();
 
-    // Update user's order status
-    const user = await User.findById(order.userId);
-    if (user) {
-      const userOrder = user.orders.find((o) => o.orderId.toString() === id);
-      if (userOrder) {
-        userOrder.status = status;
-        await user.save();
-      }
-    }
+    // Update user's order reference
+    await User.updateOne(
+      { "orders.orderId": order._id },
+      { $set: { "orders.$.status": status } }
+    );
 
     res.status(200).json({
       success: true,
-      message: "Order status updated",
+      message: "Order status updated successfully",
       order,
     });
   } catch (error) {
-    console.error("Status Update Error:", error);
-    res.status(500).json({ success: false, message: "Server error" });
+    console.error("Order Status Update Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error while updating order status",
+      error: error.message,
+    });
   }
 };
 
@@ -326,6 +372,51 @@ exports.updatePaymentStatus = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Server error",
+    });
+  }
+};
+
+// Delete order (admin only)
+exports.deleteOrder = async (req, res) => {
+  try {
+    // Only SUPERADMIN can delete orders
+    if (req.user.role !== "SUPERADMIN") {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized - Only SUPERADMIN can delete orders",
+      });
+    }
+
+    const { id } = req.params;
+
+    // Find the order
+    const order = await Order.findById(id);
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    // Delete the order
+    await Order.findByIdAndDelete(id);
+
+    // Remove the order reference from the user's orders array
+    await User.updateOne(
+      { _id: order.userId },
+      { $pull: { orders: { orderId: id } } }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Order deleted successfully",
+    });
+  } catch (error) {
+    console.error("Order Deletion Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error while deleting order",
+      error: error.message,
     });
   }
 };

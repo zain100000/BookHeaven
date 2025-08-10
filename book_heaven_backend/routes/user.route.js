@@ -37,5 +37,12 @@ router.patch(
 // Route to log out a user (requires authentication)
 router.post("/logout-user", protect, userController.logoutUser);
 
+// Route to delete profile
+router.delete(
+  "/delete-user/:id",
+  protect,
+  userController.deleteProfile
+);
+
 // Export the router for use in the main application
 module.exports = router;

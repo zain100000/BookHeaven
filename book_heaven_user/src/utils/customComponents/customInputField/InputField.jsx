@@ -1,10 +1,16 @@
 import React, {useState} from 'react';
-import {TextInput, View, StyleSheet, Dimensions} from 'react-native';
+import {
+  TextInput,
+  View,
+  StyleSheet,
+  Dimensions,
+  TouchableOpacity,
+} from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import {globalStyles} from '../../../styles/globalStyles';
 import {theme} from '../../../styles/theme';
 
-const {width} = Dimensions.get('screen');
+const {width, height} = Dimensions.get('screen');
 
 const InputField = ({
   value,
@@ -19,6 +25,9 @@ const InputField = ({
   onValueChange,
   keyboardType,
   multiline,
+  leftIcon,
+  rightIcon,
+  onRightIconPress,
 }) => {
   const [open, setOpen] = useState(false);
 
@@ -30,10 +39,7 @@ const InputField = ({
           value={selectedValue}
           items={dropdownOptions}
           setOpen={setOpen}
-          setValue={callback => {
-            const selected = callback(selectedValue);
-            onValueChange(selected);
-          }}
+          setValue={onValueChange}
           placeholder={placeholder}
           listMode="MODAL"
           modalProps={{
@@ -51,6 +57,7 @@ const InputField = ({
               borderWidth: 2.5,
               borderColor: theme.colors.primary,
               backgroundColor: theme.colors.white,
+              borderRadius: theme.borderRadius.large,
             },
             inputStyle,
           ]}
@@ -65,25 +72,40 @@ const InputField = ({
           zIndex={5}
         />
       ) : (
-        <TextInput
-          value={value}
-          onChangeText={onChangeText}
-          placeholder={placeholder}
-          placeholderTextColor={theme.colors.primary}
-          style={[
-            globalStyles.input,
-            {
-              backgroundColor: theme.colors.white,
-              color: theme.colors.primary,
-            },
-            multiline && {height: 100},
-            inputStyle,
-          ]}
-          secureTextEntry={secureTextEntry}
-          editable={editable}
-          keyboardType={keyboardType}
-          multiline={multiline}
-        />
+        <View
+          style={[styles.inputWrapper, {borderColor: theme.colors.primary}]}>
+          {leftIcon && <View style={styles.leftIconContainer}>{leftIcon}</View>}
+          <TextInput
+            value={value}
+            onChangeText={onChangeText}
+            placeholder={placeholder}
+            placeholderTextColor={theme.colors.primary}
+            style={[
+              globalStyles.input,
+              styles.textInput,
+              {
+                backgroundColor: theme.colors.white,
+                color: theme.colors.primary,
+              },
+              multiline && {height: 160},
+              inputStyle,
+              leftIcon && {paddingLeft: width * 0.1},
+              rightIcon && {paddingRight: width * 0.1},
+            ]}
+            secureTextEntry={secureTextEntry}
+            editable={editable}
+            keyboardType={keyboardType}
+            multiline={multiline}
+          />
+          {rightIcon && (
+            <TouchableOpacity
+              style={styles.rightIconContainer}
+              onPress={onRightIconPress}
+              activeOpacity={0.7}>
+              {rightIcon}
+            </TouchableOpacity>
+          )}
+        </View>
       )}
     </View>
   );
@@ -91,4 +113,29 @@ const InputField = ({
 
 export default InputField;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  inputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    overflow: 'hidden',
+  },
+
+  textInput: {
+    flex: 1,
+    fontSize: theme.typography.fontSize.sm,
+    fontFamily: theme.typography.fontFamilyMedium,
+  },
+
+  leftIconContainer: {
+    position: 'absolute',
+    left: width * 0.034,
+    top: height * 0.02,
+    zIndex: 1,
+  },
+
+  rightIconContainer: {
+    position: 'absolute',
+    right: width * 0.014,
+    padding: height * 0.014,
+  },
+});

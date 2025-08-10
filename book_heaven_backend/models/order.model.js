@@ -1,24 +1,19 @@
 const mongoose = require("mongoose");
 
-// Define the schema for the Order model
 const orderSchema = new mongoose.Schema(
   {
-    // ID of the user who placed the order (references the User model, required)
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
 
-    // Array of items in the order
     items: [
       {
-        // ID of the book in the order (references the Book model)
         bookId: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "Book",
         },
-        // Quantity of the book in the order (default: 1)
         quantity: {
           type: Number,
           default: 1,
@@ -26,28 +21,56 @@ const orderSchema = new mongoose.Schema(
       },
     ],
 
-    // Status of the order (enum: PENDING, PROCESSING, SHIPPED, DELIVERED, CANCELLED, default: PENDING)
     status: {
       type: String,
-      enum: ["PENDING", "PROCESSING", "SHIPPED", "DELIVERED", "CANCELLED"],
-      default: "PENDING",
+      enum: [
+        "ORDER_RECEIVED", // Order placed but payment not confirmed yet
+        "PAYMENT_CONFIRMED", // Payment successfully processed
+        "PREPARING", // Barista is making the drinks
+        "READY_FOR_PICKUP", // Order is ready at counter
+        "PICKED_UP", // Customer has received order
+        "COMPLETED", // Order fulfilled (for records)
+        "CANCELLED", // Order cancelled before preparation
+        "REFUNDED", // Order cancelled and refunded
+      ],
+      default: "ORDER_RECEIVED",
     },
 
     payment: {
       type: String,
-      enum: ["PENDING", "PAID"], // Valid payment states
-      default: "PENDING", // Default state for new orders
+      enum: ["PENDING", "PAID", "UNPAID"],
+      default: "PENDING",
       required: true,
     },
 
-    // Timestamp of when the order was placed (default: current time)
+    // Shipping information
+    shippingAddress: {
+      type: String,
+      required: true,
+    },
+
+    shippingFee: {
+      type: String,
+      required: true,
+    },
+
+    paymentMethod: {
+      type: String,
+      required: true,
+    },
+
+    // Total order amount
+    totalAmount: {
+      type: Number,
+      required: true,
+    },
+
     placedAt: {
       type: Date,
       default: Date.now,
     },
   },
-  { timestamps: true } // Automatically add createdAt and updatedAt fields
+  { timestamps: true }
 );
 
-// Create and export the Order model
 module.exports = mongoose.model("Order", orderSchema);
